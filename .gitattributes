@@ -1,0 +1,4 @@
+# Keep LF everywhere so fixtures (XML, logcat) and shell snippets are byte-identical on Windows and Linux.
+* text=auto eol=lf
+*.png binary
+*.apk binary
