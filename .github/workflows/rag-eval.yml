@@ -1,0 +1,79 @@
+# The quality gate. On every PR that can change answers, it installs Ollama, evaluates
+# the PR's pipeline (rag.yaml) on the `ci` profile of eval.yaml, posts the metrics as a
+# PR comment (compared with the committed baseline on the same questions) and fails
+# when a metric breaks its threshold.
+name: RAG eval gate
+
+on:
+  pull_request:
+    paths:
+      - "rag.yaml"
+      - "eval.yaml"
+      - "eval/**"
+      - "data/**"
+      - "src/**"
+      - "pyproject.toml"
+      - "uv.lock"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: rag-eval-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    env:
+      OLLAMA_HOST: http://127.0.0.1:11434
+      OLLAMA_NUM_CTX: "16384"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+          enable-cache: true
+
+      - name: Install
+        run: uv sync --locked
+
+      - name: Install Ollama and pull the models
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          for i in $(seq 1 60); do curl -sf "$OLLAMA_HOST/api/tags" >/dev/null && break; sleep 2; done
+          ollama pull qwen3:8b
+          ollama pull nomic-embed-text
+
+      - name: Evaluate this PR (profile ci)
+        run: uv run rag-gate eval --profile ci --out results/pr.json
+
+      - name: Gate
+        id: gate
+        continue-on-error: true
+        run: >-
+          uv run rag-gate gate results/pr.json
+          --baseline docs/results/baseline.json
+          --comment results/comment.md
+
+      - name: Comment on the PR
+        if: always() && github.event_name == 'pull_request' && hashFiles('results/comment.md') != ''
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: rag-eval-gate
+          path: results/comment.md
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rag-eval-results
+          path: results/
+
+      - name: Fail when the gate failed
+        if: steps.gate.outcome == 'failure'
+        run: exit 1
