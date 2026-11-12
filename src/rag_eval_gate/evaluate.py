@@ -84,6 +84,18 @@ def summarize(samples: list[dict[str, Any]], metric_names: list[str]) -> dict[st
     return out
 
 
+def restrict(results: Results, ids: set[str]) -> Results:
+    """The same run limited to ``ids``, with its summary recomputed.
+
+    Lets a PR evaluated on a subset of the golden set be compared with a full baseline
+    on exactly the same questions.
+    """
+    samples = [s for s in results.samples if s["id"] in ids]
+    return results.model_copy(
+        update={"samples": samples, "summary": summarize(samples, results.run.metrics)}
+    )
+
+
 def load_results(path: Path) -> Results:
     return Results.model_validate_json(path.read_text(encoding="utf-8"))
 

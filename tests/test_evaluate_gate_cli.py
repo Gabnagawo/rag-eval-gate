@@ -10,7 +10,14 @@ from typer.testing import CliRunner
 
 from rag_eval_gate.cli import app
 from rag_eval_gate.config import RagConfig, Threshold, load_eval_config, load_rag_config
-from rag_eval_gate.evaluate import Evaluator, Results, RunInfo, load_results, summarize
+from rag_eval_gate.evaluate import (
+    Evaluator,
+    Results,
+    RunInfo,
+    load_results,
+    restrict,
+    summarize,
+)
 from rag_eval_gate.gate import evaluate_gate, render_markdown
 from rag_eval_gate.golden import GoldenItem
 from rag_eval_gate.llm import FakeGenerator, HashEmbedder
@@ -121,6 +128,16 @@ def results_with(means: dict[str, float | None], failed: int = 0) -> Results:
         for s in res.summary.values():
             s.failed = failed
     return res
+
+
+def test_restrict_recomputes_summary() -> None:
+    res = results_with({"faithfulness": 0.5})
+    res.samples.append({"id": "b", "metrics": {"faithfulness": 1.0}})
+    res.summary = summarize(res.samples, ["faithfulness"])
+    assert res.summary["faithfulness"].mean == 0.75
+    only_b = restrict(res, {"b"})
+    assert only_b.summary["faithfulness"].mean == 1.0
+    assert [s["id"] for s in only_b.samples] == ["b"]
 
 
 def test_gate_pass_fail_and_reasons() -> None:
