@@ -12,7 +12,7 @@ Wait for a request with the specified url using `page.wait_for_request`:
 
 ```python
 with page.expect_request("**/*logo*.png") as first:
-    page.goto("https://wikipedia.org")
+  page.goto("https://wikipedia.org")
 print(first.value.url)
 ```
 
@@ -20,7 +20,7 @@ Wait for popup window:
 
 ```python
 with page.expect_popup() as popup:
-    page.get_by_text("open the popup").click()
+  page.get_by_text("open the popup").click()
 popup.value.goto("https://wikipedia.org")
 ```
 
@@ -30,12 +30,10 @@ Sometimes, events happen in random time and instead of waiting for them, they ne
 
 ```python
 def print_request_sent(request):
-    print("Request sent: " + request.url)
-
+  print("Request sent: " + request.url)
 
 def print_request_finished(request):
-    print("Request finished: " + request.url)
-
+  print("Request finished: " + request.url)
 
 page.on("request", print_request_sent)
 page.on("requestfinished", print_request_finished)

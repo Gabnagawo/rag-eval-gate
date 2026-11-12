@@ -25,7 +25,7 @@ WRONG!
 
 ```python
 page.on("dialog", lambda dialog: print(dialog.message))
-page.get_by_role("button").click()  # Will hang here
+page.get_by_role("button").click() # Will hang here
 ```
 
 :::note
@@ -40,11 +40,10 @@ You can register a dialog handler to handle the `beforeunload` dialog yourself:
 
 ```python
 def handle_dialog(dialog):
-    assert dialog.type == "beforeunload"
+    assert dialog.type == 'beforeunload'
     dialog.dismiss()
 
-
-page.on("dialog", handle_dialog)
+page.on('dialog', handle_dialog)
 page.close(run_before_unload=True)
 ```
 

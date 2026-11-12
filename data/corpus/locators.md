@@ -275,7 +275,9 @@ page.locator("//button").click()
 XPath and CSS selectors can be tied to the DOM structure or implementation. These selectors can break when the DOM structure changes. Long CSS or XPath chains below are an example of a **bad practice** that leads to unstable tests:
 
 ```python
-page.locator("#tsf > div:nth-child(2) > div.A8SBwf > div.RNNXgb > div > div.a4bIc > input").click()
+page.locator(
+    "#tsf > div:nth-child(2) > div.A8SBwf > div.RNNXgb > div > div.a4bIc > input"
+).click()
 
 page.locator('//*[@id="tsf"]/div[2]/div[1]/div[1]/div/div[2]/input').click()
 ```
@@ -396,16 +398,18 @@ Locators support an option to only select elements that have or have not a desce
 ```
 
 ```python
-page.get_by_role("listitem").filter(has=page.get_by_role("heading", name="Product 2")).get_by_role(
-    "button", name="Add to cart"
-).click()
+page.get_by_role("listitem").filter(
+    has=page.get_by_role("heading", name="Product 2")
+).get_by_role("button", name="Add to cart").click()
 ```
 
 We can also assert the product card to make sure there is only one:
 
 ```python
 expect(
-    page.get_by_role("listitem").filter(has=page.get_by_role("heading", name="Product 2"))
+    page.get_by_role("listitem").filter(
+        has=page.get_by_role("heading", name="Product 2")
+    )
 ).to_have_count(1)
 ```
 
@@ -426,7 +430,9 @@ We can also filter by **not having** a matching element inside.
 
 ```python
 expect(
-    page.get_by_role("listitem").filter(has_not=page.get_by_role("heading", name="Product 2"))
+    page.get_by_role("listitem").filter(
+        has_not=page.get_by_role("heading", name="Product 2")
+    )
 ).to_have_count(1)
 ```
 
@@ -477,8 +483,8 @@ possibly throwing the "strict mode violation" error. In this case, you can use `
 new_email = page.get_by_role("button", name="New")
 dialog = page.get_by_text("Confirm security settings")
 expect(new_email.or_(dialog).first).to_be_visible()
-if dialog.is_visible():
-    page.get_by_role("button", name="Dismiss").click()
+if (dialog.is_visible()):
+  page.get_by_role("button", name="Dismiss").click()
 new_email.click()
 ```
 

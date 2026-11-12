@@ -34,13 +34,11 @@ Take a look at the following example to see how to write a test. Note how the fi
 import re
 from playwright.sync_api import Page, expect
 
-
 def test_has_title(page: Page):
     page.goto("https://playwright.dev/")
 
     # Expect a title "to contain" a substring.
     expect(page).to_have_title(re.compile("Playwright"))
-
 
 def test_get_started_link(page: Page):
     page.goto("https://playwright.dev/")
@@ -134,15 +132,13 @@ The Playwright Pytest plugin is based on the concept of test fixtures such as th
 ```python
 from playwright.sync_api import Page
 
-
 def test_example_test(page: Page):
-    pass
-    # "page" belongs to an isolated BrowserContext, created for this specific test.
-
+  pass
+  # "page" belongs to an isolated BrowserContext, created for this specific test.
 
 def test_another_test(page: Page):
-    pass
-    # "page" in this second test is completely isolated from the first test.
+  pass
+  # "page" in this second test is completely isolated from the first test.
 ```
 
 ### Using fixtures
@@ -153,18 +149,16 @@ You can use various [fixtures](https://docs.pytest.org/en/6.2.x/fixture.html#aut
 import pytest
 from playwright.sync_api import Page, expect
 
-
 @pytest.fixture(scope="function", autouse=True)
 def before_each_after_each(page: Page):
-
+    
     print("before the test runs")
 
     # Go to the starting url before each test.
     page.goto("https://playwright.dev/")
     yield
-
+    
     print("after the test runs")
-
 
 def test_main_navigation(page: Page):
     # Assertions use the expect API.

@@ -44,7 +44,7 @@ def test_gets_the_json_from_api_and_adds_a_new_fruit(page: Page):
     def handle(route: Route):
         response = route.fetch()
         json = response.json()
-        json.append({"name": "Loquat", "id": 100})
+        json.append({ "name": "Loquat", "id": 100})
         # Fulfill using the original response, while patching the response body
         # with the given JSON object.
         route.fulfill(response=response, json=json)
@@ -177,29 +177,26 @@ The following code will intercept WebSocket connections and mock entire communic
 
 ```python
 def message_handler(ws: WebSocketRoute, message: Union[str, bytes]):
-    if message == "request":
-        ws.send("response")
+  if message == "request":
+    ws.send("response")
 
-
-page.route_web_socket(
-    "wss://example.com/ws", lambda ws: ws.on_message(lambda message: message_handler(ws, message))
-)
+page.route_web_socket("wss://example.com/ws", lambda ws: ws.on_message(
+    lambda message: message_handler(ws, message)
+))
 ```
 
 Alternatively, you may want to connect to the actual server, but intercept messages in-between and modify or block them. Here is an example that modifies some of the messages sent by the page to the server, and leaves the rest unmodified.
 
 ```python
 def message_handler(server: WebSocketRoute, message: Union[str, bytes]):
-    if message == "request":
-        server.send("request2")
-    else:
-        server.send(message)
-
+  if message == "request":
+    server.send("request2")
+  else:
+    server.send(message)
 
 def handler(ws: WebSocketRoute):
-    server = ws.connect_to_server()
-    ws.on_message(lambda message: message_handler(server, message))
-
+  server = ws.connect_to_server()
+  ws.on_message(lambda message: message_handler(server, message))
 
 page.route_web_socket("wss://example.com/ws", handler)
 ```
