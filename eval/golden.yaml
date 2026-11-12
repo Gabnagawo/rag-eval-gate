@@ -1,0 +1,185 @@
+# Golden set: 30 questions about Playwright for Python, answerable from data/corpus.
+# Each item: the question, a reference answer written from the docs, the corpus page(s)
+# that contain the answer (used by hit_rate / mrr), and an `evidence` substring that
+# tests/test_golden.py checks is present in the first source page.
+version: 1
+items:
+  - id: custom-test-id-attribute
+    question: 'How do I make get_by_test_id use a custom attribute such as data-pw instead of data-testid?'
+    reference: 'Call playwright.selectors.set_test_id_attribute("data-pw") before locating elements; get_by_test_id then matches the data-pw attribute.'
+    sources: [locators]
+    evidence: 'set_test_id_attribute'
+
+  - id: popup-window
+    question: 'How do I get hold of a popup window that opens when I click a link?'
+    reference: 'Wrap the click in page.expect_popup() as a context manager and read popup_info.value to get the new Page.'
+    sources: [pages]
+    evidence: 'expect_popup'
+
+  - id: new-tab-in-context
+    question: 'How can I handle a new page (tab) opened by a link with target="_blank"?'
+    reference: 'Wrap the click in context.expect_page() and use new_page_info.value; you can also listen with context.on("page", handler) for every new page.'
+    sources: [pages]
+    evidence: 'expect_page'
+
+  - id: dialogs-default
+    question: 'What does Playwright do with alert, confirm and prompt dialogs by default, and how do I accept one?'
+    reference: 'Dialogs are auto-dismissed by default. Register a handler before the action that triggers the dialog, for example page.on("dialog", lambda dialog: dialog.accept()).'
+    sources: [dialogs]
+    evidence: 'auto-dismissed'
+
+  - id: download-save
+    question: 'How do I wait for a file download and save it to a specific path?'
+    reference: 'Wrap the action in page.expect_download(), take download_info.value and call download.save_as(path), for example with download.suggested_filename as the file name.'
+    sources: [downloads]
+    evidence: 'save_as'
+
+  - id: download-lifetime
+    question: 'What happens to downloaded files when the browser context is closed?'
+    reference: 'Downloaded files are deleted when the browser context that produced them is closed, so save them with save_as before that.'
+    sources: [downloads]
+    evidence: 'deleted when the browser context'
+
+  - id: full-page-screenshot
+    question: 'How do I take a screenshot of the whole scrollable page, not just the viewport?'
+    reference: 'Call page.screenshot(path="screenshot.png", full_page=True).'
+    sources: [screenshots]
+    evidence: 'full_page=True'
+
+  - id: screenshot-buffer
+    question: 'Can I capture a screenshot into memory instead of a file?'
+    reference: 'Yes. page.screenshot() without a path returns the image bytes, which you can process or encode, for example in base64.'
+    sources: [screenshots]
+    evidence: 'screenshot_bytes'
+
+  - id: geolocation
+    question: 'How do I emulate a geolocation in a browser context?'
+    reference: 'Create the context with geolocation={"longitude": ..., "latitude": ...} and grant the "geolocation" permission (permissions=["geolocation"]); context.set_geolocation changes it later.'
+    sources: [emulation]
+    evidence: 'geolocation='
+
+  - id: dark-mode
+    question: 'How do I test my site in dark mode?'
+    reference: 'Create the context with color_scheme="dark", or switch an existing page with page.emulate_media(color_scheme="dark").'
+    sources: [emulation]
+    evidence: 'color_scheme=''dark'''
+
+  - id: offline-mode
+    question: 'How can I emulate the network being offline?'
+    reference: 'Create the browser context with offline=True.'
+    sources: [emulation]
+    evidence: 'offline=True'
+
+  - id: locale-timezone
+    question: 'How do I set the locale and timezone for a test?'
+    reference: 'Pass locale (for example "de-DE") and timezone_id (for example "Europe/Berlin") when creating the browser context.'
+    sources: [emulation]
+    evidence: 'timezone_id'
+
+  - id: block-images
+    question: 'How do I block all image requests on a page?'
+    reference: 'Abort them with routing, for example page.route("**/*.{png,jpg,jpeg}", lambda route: route.abort()), or abort when route.request.resource_type == "image".'
+    sources: [network]
+    evidence: 'route.abort'
+
+  - id: http-auth
+    question: 'How do I log in to a site protected by HTTP basic authentication?'
+    reference: 'Create the browser context with http_credentials={"username": ..., "password": ...}.'
+    sources: [network]
+    evidence: 'http_credentials'
+
+  - id: proxy
+    question: 'How do I make the browser use an HTTP proxy?'
+    reference: 'Pass proxy={"server": "http://myproxy.com:3128"} (optionally with username and password) to browser launch, or set proxy per context in browser.new_context.'
+    sources: [network]
+    evidence: 'proxy='
+
+  - id: mock-api
+    question: 'How do I mock an API response so that my test does not call the real backend?'
+    reference: 'Register page.route for the API URL and fulfill the request with route.fulfill(json=...) instead of letting it reach the network.'
+    sources: [mock]
+    evidence: 'route.fulfill(json=json)'
+
+  - id: har-replay
+    question: 'How can I record network traffic to a HAR file and replay it in tests?'
+    reference: 'Use page.route_from_har with a HAR path and URL pattern; update=True records (or updates) the HAR from real traffic, and update=False replays the requests from the file.'
+    sources: [mock]
+    evidence: 'route_from_har'
+
+  - id: reuse-auth-state
+    question: 'How do I log in once and reuse the signed-in state in other browser contexts?'
+    reference: 'Save the state from an authenticated context with context.storage_state(path="state.json") and create new contexts with browser.new_context(storage_state="state.json").'
+    sources: [auth]
+    evidence: 'storage_state'
+
+  - id: session-storage
+    question: 'Is session storage included when I reuse authenticated state, and how can I restore it?'
+    reference: 'No. Storage state covers cookies, local storage and IndexedDB, not session storage. Save sessionStorage with page.evaluate and restore it in the new context with an init script (context.add_init_script).'
+    sources: [auth]
+    evidence: 'Session storage'
+
+  - id: actionability-click
+    question: 'Which checks does Playwright perform on an element before clicking it?'
+    reference: 'The locator must resolve to exactly one element, and the element must be visible, stable (not animating), receive events (not obscured), enabled and not inert.'
+    sources: [actionability]
+    evidence: 'Receives Events'
+
+  - id: force-click
+    question: 'How can I click an element while skipping the non-essential actionability checks?'
+    reference: 'Pass force=True to locator.click; it disables the non-essential checks, for example whether the element receives pointer events.'
+    sources: [actionability, input]
+    evidence: 'force'
+
+  - id: upload-files
+    question: 'How do I upload a file through a file input?'
+    reference: 'Call locator.set_input_files on the input element with type "file", for example page.get_by_label("Upload file").set_input_files("myfile.pdf"); pass a list for several files or an empty list to clear.'
+    sources: [input]
+    evidence: 'set_input_files'
+
+  - id: drag-and-drop
+    question: 'How do I drag one element and drop it on another?'
+    reference: 'Use locator.drag_to, for example page.locator("#item-to-be-dragged").drag_to(page.locator("#item-to-drop-at")); it hovers, presses the mouse, moves to the target and releases.'
+    sources: [input]
+    evidence: 'drag_to'
+
+  - id: select-option
+    question: 'How do I choose an option in a select element?'
+    reference: 'Use locator.select_option, by value (select_option("blue")), by label (select_option(label="Blue")) or with a list for multiple options.'
+    sources: [input]
+    evidence: 'select_option'
+
+  - id: type-like-user
+    question: 'How do I type text character by character as if a user were using a real keyboard?'
+    reference: 'Use locator.press_sequentially, for example page.locator("#area").press_sequentially("Hello World!"); in most cases locator.fill is enough.'
+    sources: [input]
+    evidence: 'press_sequentially'
+
+  - id: assertion-timeout
+    question: 'What is the default timeout of expect assertions and how do I change it?'
+    reference: 'The default is 5 seconds. Change it globally with expect.set_options(timeout=10_000) or per assertion with the timeout argument.'
+    sources: [test-assertions-csharp-java-python]
+    evidence: 'The default timeout is 5 seconds'
+
+  - id: soft-assertions
+    question: 'What are soft assertions in Playwright for Python?'
+    reference: 'Assertions made with expect.soft do not stop the test when they fail; the test continues and is marked as failed at the end.'
+    sources: [test-assertions-csharp-java-python]
+    evidence: 'expect.soft'
+
+  - id: base-url
+    question: 'How do I configure a base URL so tests can call page.goto with relative paths?'
+    reference: 'Start pytest with the --base-url argument (provided by the pytest-base-url plugin), for example pytest --base-url http://localhost:8080, then page.goto("/admin") resolves against it.'
+    sources: [test-runners-python]
+    evidence: 'pytest --base-url'
+
+  - id: parallel-tests
+    question: 'How do I run my Playwright pytest tests in parallel?'
+    reference: 'Install pytest-xdist and run pytest with --numprocesses followed by the number of processes, for example pytest --numprocesses 2; about half of the logical CPU cores is recommended.'
+    sources: [running-tests-python, test-runners-python]
+    evidence: '--numprocesses'
+
+  - id: record-trace
+    question: 'How do I record a trace and open it in the Trace Viewer?'
+    reference: 'Start tracing with context.tracing.start(screenshots=True, snapshots=True, sources=True), stop with context.tracing.stop(path="trace.zip"), and open it with playwright show-trace trace.zip; with pytest you can also use --tracing on.'
+    sources: [trace-viewer-intro-java-python, test-runners-python]
+    evidence: 'playwright show-trace trace.zip'
