@@ -12,7 +12,7 @@ import typer
 from rag_eval_gate import __version__
 from rag_eval_gate.config import Settings, load_eval_config, load_rag_config
 from rag_eval_gate.corpus import DEFAULT_PAGES, build_corpus, corpus_sha256, load_corpus
-from rag_eval_gate.evaluate import Evaluator, RunInfo, load_results, versions
+from rag_eval_gate.evaluate import Evaluator, RunInfo, load_results, restrict, versions
 from rag_eval_gate.gate import evaluate_gate, render_markdown
 from rag_eval_gate.golden import golden_sha256, load_golden
 from rag_eval_gate.llm import (
@@ -196,7 +196,7 @@ def gate(
 ) -> None:
     """Fail (exit 1) if any metric breaks its threshold in eval.yaml."""
     results = load_results(results_path)
-    base = load_results(baseline) if baseline else None
+    base = restrict(load_results(baseline), results.sample_ids()) if baseline else None
     prof = load_eval_config(eval_config).profile(profile or results.run.profile)
     verdict = evaluate_gate(results, prof.thresholds, base)
     text = render_markdown(verdict, results, base)
