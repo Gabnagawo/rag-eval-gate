@@ -4,7 +4,9 @@
   ``sources`` (no LLM involved).
 - ``faithfulness``, ``answer_relevancy``, ``context_precision`` and ``context_recall``
   come from RAGAS.
-- ``hallucination`` comes from DeepEval (lower is better).
+- ``hallucination`` is DeepEval's HallucinationMetric score, reported unchanged. In
+  DeepEval 4.x it is the share of retrieved contexts the answer *agrees* with, so
+  higher is better (older DeepEval versions reported the opposite).
 
 The LLM-judged metrics are built lazily so unit tests and retrieval-only runs never
 import RAGAS or DeepEval.
@@ -34,7 +36,8 @@ class Sample:
 
 MetricFn = Callable[[Sample], float]
 
-LOWER_IS_BETTER = frozenset({"hallucination"})
+# No metric is lower-is-better with DeepEval 4.x; kept for metrics added later.
+LOWER_IS_BETTER: frozenset[str] = frozenset()
 RETRIEVAL_METRICS = ("hit_rate", "mrr")
 RAGAS_METRICS = ("faithfulness", "answer_relevancy", "context_precision", "context_recall")
 DEEPEVAL_METRICS = ("hallucination",)

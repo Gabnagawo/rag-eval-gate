@@ -109,6 +109,6 @@ def render_markdown(result: GateResult, results: Results, baseline: Results | No
     lines += [
         "",
         "Thresholds live in `eval.yaml`; the pipeline under test is `rag.yaml`. "
-        "hallucination is lower-is-better.",
+        "All metrics are higher-is-better (DeepEval 4.x scores hallucination as agreement).",
     ]
     return "\n".join(lines) + "\n"

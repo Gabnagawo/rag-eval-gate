@@ -8,7 +8,7 @@ metrics:
   - answer_relevancy   # RAGAS: the answer addresses the question
   - context_precision  # RAGAS: relevant chunks are ranked first (uses the reference)
   - context_recall     # RAGAS: the context covers the reference answer
-  - hallucination      # DeepEval: share of contexts the answer contradicts (lower is better)
+  - hallucination      # DeepEval 4.x HallucinationMetric: share of contexts the answer agrees with (higher is better)
 
 profiles:
   local:
@@ -21,4 +21,4 @@ profiles:
       answer_relevancy: {min: 0.60}
       context_precision: {min: 0.60}
       context_recall: {min: 0.70}
-      hallucination: {max: 0.60}
+      hallucination: {min: 0.40}
