@@ -11,8 +11,8 @@ inside the frame.
 ```python
 # Locate element inside frame
 # Get frame using any other selector
-username = page.frame_locator(".frame-class").get_by_label("User Name")
-username.fill("John")
+username = page.frame_locator('.frame-class').get_by_label('User Name')
+username.fill('John')
 ```
 
 ## Frame objects
@@ -21,11 +21,11 @@ One can access frame objects using the `page.frame` API:
 
 ```python
 # Get frame using the frame's name attribute
-frame = page.frame("frame-login")
+frame = page.frame('frame-login')
 
 # Get frame using frame's URL
-frame = page.frame(url=r".*domain.*")
+frame = page.frame(url=r'.*domain.*')
 
 # Interact with the frame
-frame.fill("#username-input", "John")
+frame.fill('#username-input', 'John')
 ```

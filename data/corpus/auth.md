@@ -29,7 +29,7 @@ the browser context will be authenticated.
 
 ```python
 page = context.new_page()
-page.goto("https://github.com/login")
+page.goto('https://github.com/login')
 
 # Interact with login form
 page.get_by_label("Username or email address").fill("username")
@@ -68,7 +68,6 @@ Reusing authenticated state covers [cookies](https://developer.mozilla.org/en-US
 
 ```python
 import os
-
 # Get session storage and store as env variable
 session_storage = page.evaluate("() => JSON.stringify(sessionStorage)")
 os.environ["SESSION_STORAGE"] = session_storage
@@ -76,16 +75,12 @@ os.environ["SESSION_STORAGE"] = session_storage
 # Set session storage in a new context
 session_storage = os.environ["SESSION_STORAGE"]
 escaped_session_storage = session_storage.replace("\\", "\\\\").replace("'", "\\'")
-context.add_init_script(
-    """(storage => {
+context.add_init_script("""(storage => {
   if (window.location.hostname === 'example.com') {
     const entries = JSON.parse(storage)
     for (const [key, value] of Object.entries(entries)) {
       window.sessionStorage.setItem(key, value)
     }
   }
-})('"""
-    + escaped_session_storage
-    + "')"
-)
+})('""" + escaped_session_storage + "')")
 ```

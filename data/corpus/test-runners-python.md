@@ -74,7 +74,6 @@ Its also possible to override the context options (`browser.new_context`) for a 
 ```python
 import pytest
 
-
 @pytest.mark.browser_context_args(timezone_id="Europe/Berlin", locale="en-GB")
 def test_browser_context_args(page):
     assert page.evaluate("window.navigator.userAgent") == "Europe/Berlin"
@@ -103,7 +102,6 @@ See Running Tests for general information on `pytest` options.
 ```py
 from playwright.sync_api import Page
 
-
 def test_visit_admin_dashboard(page: Page):
     page.goto("/admin")
     # ...
@@ -119,7 +117,6 @@ In order to simulate multiple users, you can create multiple `BrowserContext` in
 from playwright.sync_api import Page, BrowserContext
 from pytest_playwright.pytest_playwright import CreateContextCallback
 
-
 def test_foo(page: Page, new_context: CreateContextCallback) -> None:
     page.goto("https://example.com")
     context = new_context()
@@ -132,7 +129,6 @@ def test_foo(page: Page, new_context: CreateContextCallback) -> None:
 ```py
 import pytest
 
-
 @pytest.mark.skip_browser("firefox")
 def test_visit_example(page):
     page.goto("https://example.com")
@@ -143,7 +139,6 @@ def test_visit_example(page):
 
 ```py
 import pytest
-
 
 @pytest.mark.only_browser("chromium")
 def test_visit_example(page):
@@ -182,17 +177,18 @@ def test_visit_example(page):
 ```py
 import pytest
 
-
 @pytest.fixture(scope="session")
 def browser_context_args(browser_context_args):
-    return {**browser_context_args, "ignore_https_errors": True}
+    return {
+        **browser_context_args,
+        "ignore_https_errors": True
+    }
 ```
 
 ### Use custom viewport size
 
 ```py
 import pytest
-
 
 @pytest.fixture(scope="session")
 def browser_context_args(browser_context_args):
@@ -201,7 +197,7 @@ def browser_context_args(browser_context_args):
         "viewport": {
             "width": 1920,
             "height": 1080,
-        },
+        }
     }
 ```
 
@@ -210,10 +206,9 @@ def browser_context_args(browser_context_args):
 ```py
 import pytest
 
-
 @pytest.fixture(scope="session")
 def browser_context_args(browser_context_args, playwright):
-    iphone_11 = playwright.devices["iPhone 11 Pro"]
+    iphone_11 = playwright.devices['iPhone 11 Pro']
     return {
         **browser_context_args,
         **iphone_11,
@@ -227,10 +222,11 @@ Or via the CLI `--device="iPhone 11 Pro"`
 ```py
 import pytest
 
-
 @pytest.fixture(scope="session")
 def connect_options():
-    return {"wsEndpoint": "ws://localhost:8080/ws"}
+    return {
+        "wsEndpoint": "ws://localhost:8080/ws"
+    }
 ```
 
 ### Using with `unittest.TestCase`
@@ -244,7 +240,6 @@ import pytest
 import unittest
 
 from playwright.sync_api import Page
-
 
 class MyTest(unittest.TestCase):
     @pytest.fixture(autouse=True)
@@ -283,7 +278,6 @@ Ensure you are using `pytest-asyncio>=0.26.0` and set [`asyncio_default_test_loo
 ```python
 import pytest
 from playwright.async_api import Page
-
 
 @pytest.mark.asyncio(loop_scope="session")
 async def test_foo(page: Page):

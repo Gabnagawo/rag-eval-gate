@@ -11,14 +11,12 @@ Playwright comes with a [registry of device parameters](https://github.com/micro
 ```python
 from playwright.sync_api import sync_playwright, Playwright
 
-
 def run(playwright: Playwright):
-    iphone_13 = playwright.devices["iPhone 13"]
+    iphone_13 = playwright.devices['iPhone 13']
     browser = playwright.webkit.launch(headless=False)
     context = browser.new_context(
         **iphone_13,
     )
-
 
 with sync_playwright() as playwright:
     run(playwright)
@@ -45,15 +43,17 @@ The same works inside a test file.
 
 ```python
 # Create context with given viewport
-context = browser.new_context(viewport={"width": 1280, "height": 1024})
+context = browser.new_context(
+  viewport={ 'width': 1280, 'height': 1024 }
+)
 
 # Resize viewport for individual page
 page.set_viewport_size({"width": 1600, "height": 1200})
 
 # Emulate high-DPI
 context = browser.new_context(
-    viewport={"width": 2560, "height": 1440},
-    device_scale_factor=2,
+  viewport={ 'width': 2560, 'height': 1440 },
+  device_scale_factor=2,
 )
 ```
 
@@ -62,7 +62,9 @@ context = browser.new_context(
 Whether the meta viewport tag is taken into account and touch events are enabled.
 
 ```python
-context = browser.new_context(is_mobile=False)
+context = browser.new_context(
+  is_mobile=False
+)
 ```
 
 ## Locale & Timezone
@@ -71,8 +73,8 @@ Emulate the browser Locale and Timezone which can be set globally for all tests 
 
 ```python
 context = browser.new_context(
-    locale="de-DE",
-    timezone_id="Europe/Berlin",
+  locale='de-DE',
+  timezone_id='Europe/Berlin',
 )
 ```
 
@@ -89,14 +91,14 @@ Allow app to show system notifications.
 
 ```python
 context = browser.new_context(
-    permissions=["notifications"],
+  permissions=['notifications'],
 )
 ```
 
 Allow notifications for a specific domain.
 
 ```python
-context.grant_permissions(["notifications"], origin="https://skype.com")
+context.grant_permissions(['notifications'], origin='https://skype.com')
 ```
 
 Revoke all permissions with `browser_context.clear_permissions`.
@@ -111,7 +113,8 @@ Grant `"geolocation"` permissions and set geolocation to a specific area.
 
 ```python
 context = browser.new_context(
-    geolocation={"longitude": 41.890221, "latitude": 12.492348}, permissions=["geolocation"]
+  geolocation={"longitude": 41.890221, "latitude": 12.492348},
+  permissions=["geolocation"]
 )
 ```
 
@@ -131,19 +134,19 @@ Emulate the users `"colorScheme"`. Supported values are 'light', 'dark', and 'no
 ```python
 # Create context with dark mode
 context = browser.new_context(
-    color_scheme="dark"  # or 'light'
+  color_scheme='dark' # or 'light'
 )
 
 # Create page with dark mode
 page = browser.new_page(
-    color_scheme="dark"  # or 'light'
+  color_scheme='dark' # or 'light'
 )
 
 # Change color scheme for the page
-page.emulate_media(color_scheme="dark")
+page.emulate_media(color_scheme='dark')
 
 # Change media for page
-page.emulate_media(media="print")
+page.emulate_media(media='print')
 ```
 
 <img height="1824" width="2788" alt="playwright web in dark mode" src="https://user-images.githubusercontent.com/13063165/220411638-55d2b051-4678-4da7-9f0b-ed22f5a3c47c.png" />
@@ -153,13 +156,13 @@ The `"reducedMotion"`, `"forcedColors"` and `"contrast"` options emulate the `pr
 ```python
 # Create context with reduced motion, forced colors and more contrast
 context = browser.new_context(
-    reduced_motion="reduce",  # or 'no-preference'
-    forced_colors="active",  # or 'none'
-    contrast="more",  # or 'no-preference'
+  reduced_motion='reduce', # or 'no-preference'
+  forced_colors='active', # or 'none'
+  contrast='more' # or 'no-preference'
 )
 
 # Change the media features for the page
-page.emulate_media(reduced_motion="reduce", forced_colors="active", contrast="more")
+page.emulate_media(reduced_motion='reduce', forced_colors='active', contrast='more')
 ```
 
 ## User Agent
@@ -167,7 +170,9 @@ page.emulate_media(reduced_motion="reduce", forced_colors="active", contrast="mo
 The User Agent is included in the device and therefore you  will rarely need to change it however if you do need to test a different user agent you can override it with the `userAgent` property.
 
 ```python
-context = browser.new_context(user_agent="My user agent")
+context = browser.new_context(
+  user_agent='My user agent'
+)
 ```
 
 ## Offline
@@ -175,7 +180,9 @@ context = browser.new_context(user_agent="My user agent")
 Emulate the network being offline.
 
 ```python
-context = browser.new_context(offline=True)
+context = browser.new_context(
+  offline=True
+)
 ```
 
 :::note
@@ -191,5 +198,7 @@ Offline emulation does not affect WebRTC traffic: established `RTCPeerConnection
 Emulate a user scenario where JavaScript is disabled.
 
 ```python
-context = browser.new_context(java_script_enabled=False)
+context = browser.new_context(
+  java_script_enabled=False
+)
 ```

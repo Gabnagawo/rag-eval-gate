@@ -28,13 +28,13 @@ Using `locator.set_checked` is the easiest way to check and uncheck a checkbox o
 
 ```python
 # Check the checkbox
-page.get_by_label("I agree to the terms above").check()
+page.get_by_label('I agree to the terms above').check()
 
 # Assert the checked state
-expect(page.get_by_label("Subscribe to newsletter")).to_be_checked()
+expect(page.get_by_label('Subscribe to newsletter')).to_be_checked()
 
 # Select the radio button
-page.get_by_label("XL").check()
+page.get_by_label('XL').check()
 ```
 
 ## Select options
@@ -44,13 +44,13 @@ You can specify option `value`, or `label` to select. Multiple options can be se
 
 ```python
 # Single selection matching the value or label
-page.get_by_label("Choose a color").select_option("blue")
+page.get_by_label('Choose a color').select_option('blue')
 
 # Single selection matching the label
-page.get_by_label("Choose a color").select_option(label="Blue")
+page.get_by_label('Choose a color').select_option(label='Blue')
 
 # Multiple selected items
-page.get_by_label("Choose multiple colors").select_option(["red", "green", "blue"])
+page.get_by_label('Choose multiple colors').select_option(['red', 'green', 'blue'])
 ```
 
 ## Mouse click
@@ -74,7 +74,7 @@ page.get_by_text("Item").click(modifiers=["Shift"])
 page.get_by_text("Item").hover()
 
 # Click the top left corner
-page.get_by_text("Item").click(position={"x": 0, "y": 0})
+page.get_by_text("Item").click(position={ "x": 0, "y": 0})
 ```
 
 Under the hood, this and other pointer-related methods:
@@ -99,7 +99,7 @@ page.get_by_role("button").click(force=True)
 If you are not interested in testing your app under the real conditions and want to simulate the click by any means possible, you can trigger the [`HTMLElement.click()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/click) behavior via simply dispatching a click event on the element with `locator.dispatch_event`:
 
 ```python
-page.get_by_role("button").dispatch_event("click")
+page.get_by_role("button").dispatch_event('click')
 ```
 
 ## Type characters
@@ -112,7 +112,7 @@ Type into the field character by character, as if it was a user with a real keyb
 
 ```python
 # Press keys one by one
-page.locator("#area").press_sequentially("Hello World!")
+page.locator('#area').press_sequentially('Hello World!')
 ```
 
 This method will emit all the necessary keyboard events, with all the `keydown`, `keyup`, `keypress` events in place. You can even specify the optional `delay` between the key presses to simulate real user behavior.
@@ -146,10 +146,10 @@ Simple version produces a single character. This character is case-sensitive, so
 
 ```python
 # <input id=name>
-page.locator("#name").press("Shift+A")
+page.locator('#name').press('Shift+A')
 
 # <input id=name>
-page.locator("#name").press("Shift+ArrowLeft")
+page.locator('#name').press('Shift+ArrowLeft')
 ```
 
 Shortcuts such as `"Control+o"` or `"Control+Shift+T"` are supported as well. When specified with the modifier, modifier is pressed and being held while the subsequent key is being pressed.
@@ -162,20 +162,22 @@ You can select input files for upload using the `locator.set_input_files` method
 
 ```python
 # Select one file
-page.get_by_label("Upload file").set_input_files("myfile.pdf")
+page.get_by_label("Upload file").set_input_files('myfile.pdf')
 
 # Select multiple files
-page.get_by_label("Upload files").set_input_files(["file1.txt", "file2.txt"])
+page.get_by_label("Upload files").set_input_files(['file1.txt', 'file2.txt'])
 
 # Select a directory
-page.get_by_label("Upload directory").set_input_files("mydir")
+page.get_by_label("Upload directory").set_input_files('mydir')
 
 # Remove all the selected files
 page.get_by_label("Upload file").set_input_files([])
 
 # Upload buffer from memory
 page.get_by_label("Upload file").set_input_files(
-    files=[{"name": "test.txt", "mimeType": "text/plain", "buffer": b"this is a test"}],
+    files=[
+        {"name": "test.txt", "mimeType": "text/plain", "buffer": b"this is a test"}
+    ],
 )
 ```
 
@@ -194,7 +196,7 @@ file_chooser.set_files("myfile.pdf")
 For the dynamic pages that handle focus events, you can focus the given element with `locator.focus`.
 
 ```python
-page.get_by_label("password").focus()
+page.get_by_label('password').focus()
 ```
 
 ## Drag and Drop

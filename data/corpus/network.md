@@ -17,7 +17,9 @@ Check out our API mocking guide to learn more on how to
 Perform HTTP Authentication.
 
 ```python
-context = browser.new_context(http_credentials={"username": "bill", "password": "pa55w0rd"})
+context = browser.new_context(
+    http_credentials={"username": "bill", "password": "pa55w0rd"}
+)
 page = context.new_page()
 page.goto("https://example.com")
 ```
@@ -32,9 +34,11 @@ You can optionally specify username and password for HTTP(S) proxy, you can also
 Here is an example of a global proxy:
 
 ```python
-browser = chromium.launch(
-    proxy={"server": "http://myproxy.com:3128", "username": "usr", "password": "pwd"}
-)
+browser = chromium.launch(proxy={
+  "server": "http://myproxy.com:3128",
+  "username": "usr",
+  "password": "pwd"
+})
 ```
 
 Its also possible to specify it per context:
@@ -51,7 +55,6 @@ You can monitor all the [Request]s and [Response]s:
 ```python
 from playwright.sync_api import sync_playwright, Playwright
 
-
 def run(playwright: Playwright):
     chromium = playwright.chromium
     browser = chromium.launch()
@@ -61,7 +64,6 @@ def run(playwright: Playwright):
     page.on("response", lambda response: print("<<", response.status, response.url))
     page.goto("https://example.com")
     browser.close()
-
 
 with sync_playwright() as playwright:
     run(playwright)
@@ -95,7 +97,9 @@ response = response_info.value
 ## Handle requests
 
 ```python
-page.route("**/api/fetch_data", lambda route: route.fulfill(status=200, body=test_data))
+page.route(
+    "**/api/fetch_data",
+    lambda route: route.fulfill(status=200, body=test_data))
 page.goto("https://example.com")
 ```
 
@@ -106,7 +110,9 @@ You can mock API endpoints via handling the network requests in your Playwright 
 Set up route on the entire browser context with `browser_context.route` or page with `page.route`. It will apply to popup windows and opened links.
 
 ```python
-context.route("**/api/login", lambda route: route.fulfill(status=200, body="accept"))
+context.route(
+    "**/api/login",
+    lambda route: route.fulfill(status=200, body="accept"))
 page.goto("https://example.com")
 ```
 
@@ -118,8 +124,6 @@ def handle_route(route):
     headers = route.request.headers
     del headers["x-secret"]
     route.continue_(headers=headers)
-
-
 page.route("**/*", handle_route)
 
 # Continue requests as POST.
@@ -136,10 +140,7 @@ You can abort requests using `page.route` and `route.abort`.
 page.route("**/*.{png,jpg,jpeg}", lambda route: route.abort())
 
 # Abort based on the request type
-page.route(
-    "**/*",
-    lambda route: route.abort() if route.request.resource_type == "image" else route.continue_(),
-)
+page.route("**/*", lambda route: route.abort() if route.request.resource_type == "image"  else route.continue_())
 ```
 
 ## Modify responses
@@ -161,7 +162,6 @@ def handle_route(route: Route) -> None:
         # Force content type to be html.
         headers={**response.headers, "content-type": "text/html"},
     )
-
 
 page.route("**/title.html", handle_route)
 ```
@@ -217,7 +217,6 @@ def on_web_socket(ws):
     ws.on("framesent", lambda payload: print(payload))
     ws.on("framereceived", lambda payload: print(payload))
     ws.on("close", lambda payload: print("WebSocket closed"))
-
 
 page.on("websocket", on_web_socket)
 ```

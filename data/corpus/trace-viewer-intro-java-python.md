@@ -37,7 +37,7 @@ page = context.new_page()
 page.goto("https://playwright.dev")
 
 # Stop tracing and export it into a zip archive.
-context.tracing.stop(path="trace.zip")
+context.tracing.stop(path = "trace.zip")
 ```
 
 </details>

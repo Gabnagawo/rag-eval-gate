@@ -60,7 +60,8 @@ packages = ["src/rag_eval_gate"]
 line-length = 100
 target-version = "py312"
 src = ["src", "tests"]
-extend-exclude = ["docs/results"]
+# data/ holds upstream docs verbatim: ruff would reformat the Python blocks inside them.
+extend-exclude = ["docs/results", "data"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP", "B", "S", "SIM", "C4", "PT", "RUF", "N", "PTH", "TID"]
