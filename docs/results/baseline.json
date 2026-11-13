@@ -1,0 +1,2010 @@
+{
+  "schema_version": 1,
+  "run": {
+    "run_id": "baseline",
+    "profile": "local",
+    "started_at": "2026-11-12T23:14:34.620722Z",
+    "finished_at": "2026-11-13T00:37:14.288535Z",
+    "generator": "ollama/qwen3:8b",
+    "judge_model": "qwen3:8b",
+    "embed_model": "nomic-embed-text",
+    "rag_config": {
+      "corpus_dir": "data\\corpus",
+      "chunk_size": 1200,
+      "chunk_overlap": 150,
+      "top_k": 4,
+      "embed_model": "nomic-embed-text",
+      "query_prefix": "search_query: ",
+      "document_prefix": "search_document: ",
+      "max_answer_tokens": 400
+    },
+    "corpus_sha256": "ad7e86ab7e942a6422ff171cce42c754233d62336f4f25df329eb16a8a10ad24",
+    "golden_sha256": "973030887bc8ec98fb13712873a5700e85bd8d9f4eb42def46df3d79ef87bde5",
+    "metrics": [
+      "hit_rate",
+      "mrr",
+      "faithfulness",
+      "answer_relevancy",
+      "context_precision",
+      "context_recall",
+      "hallucination"
+    ],
+    "versions": {
+      "python": "3.12.10",
+      "rag-eval-gate": "0.1.0",
+      "ragas": "0.4.3",
+      "deepeval": "4.3.4",
+      "numpy": "2.5.4"
+    },
+    "platform": ""
+  },
+  "samples": [
+    {
+      "id": "custom-test-id-attribute",
+      "question": "How do I make get_by_test_id use a custom attribute such as data-pw instead of data-testid?",
+      "reference": "Call playwright.selectors.set_test_id_attribute(\"data-pw\") before locating elements; get_by_test_id then matches the data-pw attribute.",
+      "sources": [
+        "locators"
+      ],
+      "answer": "To make `get_by_test_id` use a custom attribute like `data-pw`, set the test id attribute using `playwright.selectors.set_test_id_attribute(\"data-pw\")` before locating elements. This changes the default attribute used by `get_by_test_id` to `data-pw`.",
+      "contexts": [
+        "By default, `page.get_by_test_id` will locate elements based on the `data-testid` attribute, but you can configure it in your test config or by calling `selectors.set_test_id_attribute`.\n\nSet the test id to use a custom data attribute for your tests.\n\n```python\nplaywright.selectors.set_test_id_attribute(\"data-pw\")\n```\n\nIn your html you can now use `data-pw` as your test id instead of the default `data-testid`.\n\n```html\n<button data-pw=\"directions\">Itinéraire</button>\n```\n\nAnd then locate the element as you would normally do:\n\n```python\npage.get_by_test_id(\"directions\").click()\n```",
+        "Use the `page.get_by_test_id` method to locate an element in a list. You may need to modify the html and add a test id if you don't already have a test id.\n\nFor example, consider the following DOM structure:\n\n```html\n<ul>\n  <li data-testid='apple'>apple</li>\n  <li data-testid='banana'>banana</li>\n  <li data-testid='orange'>orange</li>\n</ul>\n```\n\nLocate an item by its test id of \"orange\" and then click it.\n\n```python\npage.get_by_test_id(\"orange\").click()\n```",
+        "Testing by test ids is the most resilient way of testing as even if your text or role of the attribute changes, the test will still pass. QA's and developers should define explicit test ids and query them with `page.get_by_test_id`. However testing by test ids is not user facing. If the role or text value is important to you then consider using user facing locators such as role and text locators.\n\nFor example, consider the following DOM structure.\n\n```html\n<button data-testid=\"directions\">Itinéraire</button>\n```\n\nYou can locate the element by its test id:\n\n```python\npage.get_by_test_id(\"directions\").click()\n```\n\n:::note[When to use testid locators]\nYou can also use test ids when you choose to use the test id methodology or when you can't locate by role or text.\n:::",
+        "Create a file that follows the `test_` prefix convention, such as `test_example.py`, inside the current working directory or in a sub-directory with the code below. Make sure your test name also follows the `test_` prefix convention.\n\n```py\nimport re\nfrom playwright.sync_api import Page, expect\n\ndef test_has_title(page: Page):\n    page.goto(\"https://playwright.dev/\")\n\n    # Expect a title \"to contain\" a substring.\n    expect(page).to_have_title(re.compile(\"Playwright\"))\n\ndef test_get_started_link(page: Page):\n    page.goto(\"https://playwright.dev/\")\n\n    # Click the get started link.\n    page.get_by_role(\"link\", name=\"Get started\").click()\n\n    # Expects page to have a heading with the name of Installation.\n    expect(page.get_by_role(\"heading\", name=\"Installation\")).to_be_visible()\n```"
+      ],
+      "retrieved_sources": [
+        "locators",
+        "locators",
+        "locators",
+        "intro-python"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.8028,
+        "context_precision": 0.8333,
+        "context_recall": 1.0,
+        "hallucination": 0.75
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "locators#12",
+          "source": "locators",
+          "score": 0.7771
+        },
+        {
+          "id": "locators#31",
+          "source": "locators",
+          "score": 0.7173
+        },
+        {
+          "id": "locators#11",
+          "source": "locators",
+          "score": 0.71
+        },
+        {
+          "id": "intro-python#2",
+          "source": "intro-python",
+          "score": 0.6149
+        }
+      ],
+      "timings_s": {
+        "retrieval": 2.089,
+        "generation": 8.02,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 37.25,
+        "answer_relevancy": 3.62,
+        "context_precision": 37.87,
+        "context_recall": 14.12,
+        "hallucination": 28.43
+      }
+    },
+    {
+      "id": "popup-window",
+      "question": "How do I get hold of a popup window that opens when I click a link?",
+      "reference": "Wrap the click in page.expect_popup() as a context manager and read popup_info.value to get the new Page.",
+      "sources": [
+        "pages"
+      ],
+      "answer": "To get hold of a popup window that opens when you click a link, you can use the `page.expect_popup()` method. This method allows you to wait for the popup to open and then retrieve a reference to it.\n\n```python\nwith page.expect_popup() as popup_info:\n    page.get_by_text(\"open the popup\").click()\npopup = popup_info.value\n```",
+      "contexts": [
+        "If the page opens a pop-up (e.g. pages opened by `target=\"_blank\"` links), you can get a reference to it by listening to the `popup` event on the page.\n\nThis event is emitted in addition to the `browserContext.on('page')` event, but only for popups relevant to this page.\n\n```python\n# Get popup after a specific action (e.g., click)\nwith page.expect_popup() as popup_info:\n    page.get_by_text(\"open the popup\").click()\npopup = popup_info.value\n\n# Interact with the popup normally\npopup.get_by_role(\"button\").click()\nprint(popup.title())\n```\n\nIf the action that triggers the popup is unknown, the following pattern can be used.\n\n```python\n# Get all popups when they open\ndef handle_popup(popup):\n    popup.wait_for_load_state()\n    print(popup.title())\n\npage.on(\"popup\", handle_popup)\n```",
+        "Set up route on the entire browser context with `browser_context.route` or page with `page.route`. It will apply to popup windows and opened links.\n\n```python\ncontext.route(\n    \"**/api/login\",\n    lambda route: route.fulfill(status=200, body=\"accept\"))\npage.goto(\"https://example.com\")\n```",
+        "In order to assert that a print dialog via [`window.print`](https://developer.mozilla.org/en-US/docs/Web/API/Window/print) was triggered, you can use the following snippet:\n\n```python\npage.goto(\"<url>\")\n\npage.evaluate(\"(() => {window.waitForPrintDialog = new Promise(f => window.print = f);})()\")\npage.get_by_text(\"Print it!\").click()\n\npage.wait_for_function(\"window.waitForPrintDialog\")\n```\n\nThis will wait for the print dialog to be opened after the button is clicked.\nMake sure to evaluate the script before clicking the button / after the page is loaded.",
+        "Playwright can interact with the web page dialogs such as [`alert`](https://developer.mozilla.org/en-US/docs/Web/API/Window/alert), [`confirm`](https://developer.mozilla.org/en-US/docs/Web/API/Window/confirm), [`prompt`](https://developer.mozilla.org/en-US/docs/Web/API/Window/prompt) as well as [`beforeunload`](https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event) confirmation. For print dialogs, see Print."
+      ],
+      "retrieved_sources": [
+        "pages",
+        "network",
+        "dialogs",
+        "dialogs"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.8385,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "hallucination": 0.25
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "pages#3",
+          "source": "pages",
+          "score": 0.737
+        },
+        {
+          "id": "network#7",
+          "source": "network",
+          "score": 0.6653
+        },
+        {
+          "id": "dialogs#3",
+          "source": "dialogs",
+          "score": 0.6628
+        },
+        {
+          "id": "dialogs#0",
+          "source": "dialogs",
+          "score": 0.6562
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.048,
+        "generation": 10.792,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 66.09,
+        "answer_relevancy": 9.89,
+        "context_precision": 50.33,
+        "context_recall": 18.95,
+        "hallucination": 31.91
+      }
+    },
+    {
+      "id": "new-tab-in-context",
+      "question": "How can I handle a new page (tab) opened by a link with target=\"_blank\"?",
+      "reference": "Wrap the click in context.expect_page() and use new_page_info.value; you can also listen with context.on(\"page\", handler) for every new page.",
+      "sources": [
+        "pages"
+      ],
+      "answer": "To handle a new page (tab) opened by a link with `target=\"_blank\"`, you can use the `page` event on the browser context. Here's how:\n\n```python\n# Get new page after a specific action (e.g., clicking a link)\nwith context.expect_page() as new_page_info:\n    page.get_by_text(\"open new tab\").click()  # Opens a new tab\nnew_page = new_page_info.value\n\n# Interact with the new page normally\nnew_page.get_by_role(\"button\").click()\nprint(new_page.title())\n```",
+      "contexts": [
+        "The `page` event on browser contexts can be used to get new pages that are created in the context. This can be used to\nhandle new pages opened by `target=\"_blank\"` links.\n\n```python\n# Get page after a specific action (e.g. clicking a link)\nwith context.expect_page() as new_page_info:\n    page.get_by_text(\"open new tab\").click() # Opens a new tab\nnew_page = new_page_info.value\n\n# Interact with the new page normally\nnew_page.get_by_role(\"button\").click()\nprint(new_page.title())\n```\n\nIf the action that triggers the new page is unknown, the following pattern can be used.\n\n```python\n# Get all new pages (including popups) in the context\ndef handle_page(page):\n    page.wait_for_load_state()\n    print(page.title())\n\ncontext.on(\"page\", handle_page)\n```",
+        "Simplest form of a navigation is opening a URL:\n\n```python\n# Navigate the page\npage.goto(\"https://example.com\")\n```\n\nThe code above loads the page and waits for the web page to fire the\n[load](https://developer.mozilla.org/en-US/docs/Web/API/Window/load_event) event.\nThe load event is fired when the whole page has loaded, including all dependent\nresources such as stylesheets, scripts, iframes, and images.\n\n:::note\nIf the page does a client-side redirect before `load`, `page.goto` will\nwait for the redirected page to fire the `load` event.\n:::\n\n:::note\nIn Firefox, a navigation triggered by the page can interrupt `page.goto`\nwith an `NS_BINDING_ABORTED` error. This is a\n[known Firefox limitation](https://github.com/microsoft/playwright/issues/20749).\n:::",
+        "If the page opens a pop-up (e.g. pages opened by `target=\"_blank\"` links), you can get a reference to it by listening to the `popup` event on the page.\n\nThis event is emitted in addition to the `browserContext.on('page')` event, but only for popups relevant to this page.\n\n```python\n# Get popup after a specific action (e.g., click)\nwith page.expect_popup() as popup_info:\n    page.get_by_text(\"open the popup\").click()\npopup = popup_info.value\n\n# Interact with the popup normally\npopup.get_by_role(\"button\").click()\nprint(popup.title())\n```\n\nIf the action that triggers the popup is unknown, the following pattern can be used.\n\n```python\n# Get all popups when they open\ndef handle_popup(popup):\n    popup.wait_for_load_state()\n    print(popup.title())\n\npage.on(\"popup\", handle_popup)\n```",
+        "Playwright splits the process of showing a new document in a page into **navigation** and **loading**.\n\n**Navigation starts** by changing the page URL or by interacting with the page (e.g., clicking a link).\nThe navigation intent may be canceled, for example, on hitting an unresolved DNS address or transformed into a file download.\n\n**Navigation is committed** when the response headers have been parsed and session history is updated. Only after the\nnavigation succeeds (is committed), the page starts **loading** the document.\n\n**Loading** covers getting the remaining response body over the network, parsing, executing the scripts and firing load\nevents:\n- `page.url` is set to the new url\n- document content is loaded over network and parsed\n- `d_o_m_content_loaded` event is fired\n- page executes some scripts and loads resources like stylesheets and images\n- `load` event is fired\n- page executes dynamically loaded scripts"
+      ],
+      "retrieved_sources": [
+        "pages",
+        "navigations",
+        "pages",
+        "navigations"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.892,
+        "context_precision": 0.8056,
+        "context_recall": 1.0,
+        "hallucination": 0.25
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "pages#2",
+          "source": "pages",
+          "score": 0.7274
+        },
+        {
+          "id": "navigations#1",
+          "source": "navigations",
+          "score": 0.6734
+        },
+        {
+          "id": "pages#3",
+          "source": "pages",
+          "score": 0.6678
+        },
+        {
+          "id": "navigations#6",
+          "source": "navigations",
+          "score": 0.6667
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.082,
+        "generation": 22.758,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 94.39,
+        "answer_relevancy": 10.39,
+        "context_precision": 53.77,
+        "context_recall": 26.79,
+        "hallucination": 37.4
+      }
+    },
+    {
+      "id": "dialogs-default",
+      "question": "What does Playwright do with alert, confirm and prompt dialogs by default, and how do I accept one?",
+      "reference": "Dialogs are auto-dismissed by default. Register a handler before the action that triggers the dialog, for example page.on(\"dialog\", lambda dialog: dialog.accept()).",
+      "sources": [
+        "dialogs"
+      ],
+      "answer": "By default, Playwright auto-dismisses alert, confirm, and prompt dialogs. To accept a dialog, you can register a handler for the `dialog` event and use `dialog.accept()`. Here's how to accept a dialog:\n\n```python\npage.on(\"dialog\", lambda dialog: dialog.accept())\n```",
+      "contexts": [
+        "Playwright can interact with the web page dialogs such as [`alert`](https://developer.mozilla.org/en-US/docs/Web/API/Window/alert), [`confirm`](https://developer.mozilla.org/en-US/docs/Web/API/Window/confirm), [`prompt`](https://developer.mozilla.org/en-US/docs/Web/API/Window/prompt) as well as [`beforeunload`](https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event) confirmation. For print dialogs, see Print.",
+        "By default, dialogs are auto-dismissed by Playwright, so you don't have to handle them. However, you can register a dialog handler before the action that triggers the dialog to either `dialog.accept` or `dialog.dismiss` it.\n\n```python\npage.on(\"dialog\", lambda dialog: dialog.accept())\npage.get_by_role(\"button\").click()\n```\n\n:::note\n`dialog` listener **must handle** the dialog. Otherwise your action will stall, be it `locator.click` or something else. That's because dialogs in Web are modals and therefore block further page execution until they are handled.\n:::\n\nAs a result, the following snippet will never resolve:\n\n:::warning\nWRONG!\n:::\n\n```python\npage.on(\"dialog\", lambda dialog: print(dialog.message))\npage.get_by_role(\"button\").click() # Will hang here\n```\n\n:::note\nIf there is no listener for `dialog`, all dialogs are automatically dismissed.\n:::",
+        "Playwright performs a range of actionability checks on the elements before making actions to ensure these actions\nbehave as expected. It auto-waits for all the relevant checks to pass and only then performs the requested action. If the required checks do not pass within the given `timeout`, action fails with the `TimeoutError`.\n\nFor example, for `locator.click`, Playwright will ensure that:\n- locator resolves to exactly one element\n- element is [Visible]\n- element is [Stable], as in not animating or completed animation\n- element [Receives Events], as in not obscured by other elements\n- element is [Enabled]\n- element is [Not Inert]\n\nHere is the complete list of actionability checks performed for each action:",
+        "Playwright can interact with HTML Input elements such as text inputs, checkboxes, radio buttons, select options, mouse clicks, type characters, keys and shortcuts as well as upload files and focus elements."
+      ],
+      "retrieved_sources": [
+        "dialogs",
+        "dialogs",
+        "actionability",
+        "input"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.8344,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "hallucination": 0.75
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "dialogs#0",
+          "source": "dialogs",
+          "score": 0.8411
+        },
+        {
+          "id": "dialogs#1",
+          "source": "dialogs",
+          "score": 0.7807
+        },
+        {
+          "id": "actionability#0",
+          "source": "actionability",
+          "score": 0.7475
+        },
+        {
+          "id": "input#0",
+          "source": "input",
+          "score": 0.7432
+        }
+      ],
+      "timings_s": {
+        "retrieval": 5.151,
+        "generation": 14.327,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 51.35,
+        "answer_relevancy": 12.73,
+        "context_precision": 48.17,
+        "context_recall": 24.87,
+        "hallucination": 31.66
+      }
+    },
+    {
+      "id": "download-save",
+      "question": "How do I wait for a file download and save it to a specific path?",
+      "reference": "Wrap the action in page.expect_download(), take download_info.value and call download.save_as(path), for example with download.suggested_filename as the file name.",
+      "sources": [
+        "downloads"
+      ],
+      "answer": "To wait for a file download and save it to a specific path, you can use the `page.expect_download()` method and then call the `save_as` method on the downloaded file object. Here is an example:\n\n```python\nwith page.expect_download() as download_info:\n    page.get_by_text(\"Download file\").click()\ndownload = download_info.value\ndownload.save_as(\"/path/to/save/at/\" + download.suggested_filename)\n```",
+      "contexts": [
+        "For every attachment downloaded by the page, `download` event is emitted. All these attachments are downloaded into a temporary folder. You can obtain the download url, file name and payload stream using the [Download] object from the event.\n\nYou can specify where to persist downloaded files using the `launch.downloads_path` option in `browser_type.launch`.\n\n:::note\nDownloaded files are deleted when the browser context that produced them is closed.\n:::\n\nHere is the simplest way to handle the file download:\n\n```python\n# Start waiting for the download\nwith page.expect_download() as download_info:\n    # Perform the action that initiates download\n    page.get_by_text(\"Download file\").click()\ndownload = download_info.value\n\n# Wait for the download process to complete and save the downloaded file somewhere\ndownload.save_as(\"/path/to/save/at/\" + download.suggested_filename)\n```",
+        "If you have no idea what initiates the download, you can still handle the event:\n\n```python\npage.on(\"download\", lambda download: print(download.path()))\n```\n\nNote that handling the event forks the control flow and makes the script harder to follow. Your scenario might end while you are downloading a file since your main control flow is not awaiting for this operation to resolve.\n\n:::note\nFor uploading files, see the uploading files section.\n:::",
+        "You can select input files for upload using the `locator.set_input_files` method. It expects first argument to point to an [input element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input) with the type `\"file\"`. Multiple files can be passed in the array. If some of the file paths are relative, they are resolved relative to the current working directory. Empty array clears the selected files.\n\n```python\n# Select one file\npage.get_by_label(\"Upload file\").set_input_files('myfile.pdf')\n\n# Select multiple files\npage.get_by_label(\"Upload files\").set_input_files(['file1.txt', 'file2.txt'])\n\n# Select a directory\npage.get_by_label(\"Upload directory\").set_input_files('mydir')\n\n# Remove all the selected files\npage.get_by_label(\"Upload file\").set_input_files([])\n\n# Upload buffer from memory\npage.get_by_label(\"Upload file\").set_input_files(\n    files=[\n        {\"name\": \"test.txt\", \"mimeType\": \"text/plain\", \"buffer\": b\"this is a test\"}\n    ],\n)\n```\n\nIf you don't have input element in hand (it is created dynamically), you can handle the `file_chooser` event\nor use a corresponding waiting method upon your action:",
+        "You can open the saved trace using the Playwright CLI or in your browser on [`trace.playwright.dev`](https://trace.playwright.dev). Make sure to add the full path to where your trace's zip file is located. Once opened you can click on each action or use the timeline to see the state of the page before and after each action. You can also inspect the log, source and network during each step of the test. The trace viewer creates a DOM snapshot so you can fully interact with it, open devtools etc.\n\n```bash\nmvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args=\"show-trace trace.zip\"\n```\n\n```bash\nplaywright show-trace trace.zip\n```\n\n######\n\n<img src=\"https://github.com/microsoft/playwright/assets/13063165/10fe3585-8401-4051-b1c2-b2e92ac4c274\" alt=\"playwright trace viewer\" width=\"3598\" height=\"2218\" />\n\nTo learn more check out our detailed guide on Trace Viewer."
+      ],
+      "retrieved_sources": [
+        "downloads",
+        "downloads",
+        "input",
+        "trace-viewer-intro-java-python"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.8577,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "hallucination": 0.5
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "downloads#0",
+          "source": "downloads",
+          "score": 0.7855
+        },
+        {
+          "id": "downloads#1",
+          "source": "downloads",
+          "score": 0.7108
+        },
+        {
+          "id": "input#10",
+          "source": "input",
+          "score": 0.6523
+        },
+        {
+          "id": "trace-viewer-intro-java-python#2",
+          "source": "trace-viewer-intro-java-python",
+          "score": 0.6451
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.057,
+        "generation": 20.753,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 73.85,
+        "answer_relevancy": 8.07,
+        "context_precision": 51.26,
+        "context_recall": 22.09,
+        "hallucination": 25.95
+      }
+    },
+    {
+      "id": "download-lifetime",
+      "question": "What happens to downloaded files when the browser context is closed?",
+      "reference": "Downloaded files are deleted when the browser context that produced them is closed, so save them with save_as before that.",
+      "sources": [
+        "downloads"
+      ],
+      "answer": "Downloaded files are deleted when the browser context that produced them is closed. This is noted in the documentation as a cleanup process. The files are stored temporarily in a specified downloads path, but they are removed once the context is closed. To persist files, you must save them explicitly before the context is closed.",
+      "contexts": [
+        "For every attachment downloaded by the page, `download` event is emitted. All these attachments are downloaded into a temporary folder. You can obtain the download url, file name and payload stream using the [Download] object from the event.\n\nYou can specify where to persist downloaded files using the `launch.downloads_path` option in `browser_type.launch`.\n\n:::note\nDownloaded files are deleted when the browser context that produced them is closed.\n:::\n\nHere is the simplest way to handle the file download:\n\n```python\n# Start waiting for the download\nwith page.expect_download() as download_info:\n    # Perform the action that initiates download\n    page.get_by_text(\"Download file\").click()\ndownload = download_info.value\n\n# Wait for the download process to complete and save the downloaded file somewhere\ndownload.save_as(\"/path/to/save/at/\" + download.suggested_filename)\n```",
+        "Emulate the network being offline.\n\n```python\ncontext = browser.new_context(\n  offline=True\n)\n```\n\n:::note\nOffline emulation affects HTTP requests, such as page navigations, `fetch()` and `XMLHttpRequest`.\n\nWebSocket behavior depends on the browser and whether the connection is already established. Chromium and Firefox fail new WebSocket connections while offline, but do not close already-open connections. Chromium can defer incoming messages until the context goes back online, rather than lose them; Firefox can continue delivering messages while offline. WebKit can allow both new WebSocket connections and traffic on established connections while offline. Do not rely on offline emulation to test WebSocket message loss or connection closure.\n\nOffline emulation does not affect WebRTC traffic: established `RTCPeerConnection`s keep sending and receiving media over UDP. To test WebRTC connection loss, interrupt the connection outside the browser, for example by stopping the TURN server or using an OS-level firewall.\n:::",
+        "Modern browsers utilize a Back/Forward Cache (BFCache) to instantly load a page when a user navigates back or forward. This is achieved by freezing the page's DOM and JavaScript heap in memory, and thawing it upon return.\n\nBy default, Playwright disables the BFCache across all browsers to ensure consistent, clean testing environments.\n\nEven if you explicitly enable BFCache, **testing BFCache restorations is not supported**. Because a BFCache restore skips the network fetch phase, the browser does not fire standard navigation lifecycle events (such as `commit`, `domcontentloaded`, or `load`). Playwright's internal `Page` state heavily relies on these network-level events to stay synchronized.\n\nConsequently, triggering a BFCache restore (e.g., via `page.goBack()`) will bypass Playwright's lifecycle tracking, resulting in timeouts and a completely desynchronized `Page` object where subsequent interactions will fail.",
+        "If you have no idea what initiates the download, you can still handle the event:\n\n```python\npage.on(\"download\", lambda download: print(download.path()))\n```\n\nNote that handling the event forks the control flow and makes the script harder to follow. Your scenario might end while you are downloading a file since your main control flow is not awaiting for this operation to resolve.\n\n:::note\nFor uploading files, see the uploading files section.\n:::"
+      ],
+      "retrieved_sources": [
+        "downloads",
+        "emulation",
+        "navigations",
+        "downloads"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.9816,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "hallucination": 0.5
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "downloads#0",
+          "source": "downloads",
+          "score": 0.7401
+        },
+        {
+          "id": "emulation#11",
+          "source": "emulation",
+          "score": 0.6669
+        },
+        {
+          "id": "navigations#5",
+          "source": "navigations",
+          "score": 0.6664
+        },
+        {
+          "id": "downloads#1",
+          "source": "downloads",
+          "score": 0.6533
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.055,
+        "generation": 11.281,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 56.17,
+        "answer_relevancy": 4.33,
+        "context_precision": 31.72,
+        "context_recall": 16.74,
+        "hallucination": 26.08
+      }
+    },
+    {
+      "id": "full-page-screenshot",
+      "question": "How do I take a screenshot of the whole scrollable page, not just the viewport?",
+      "reference": "Call page.screenshot(path=\"screenshot.png\", full_page=True).",
+      "sources": [
+        "screenshots"
+      ],
+      "answer": "To take a screenshot of the entire scrollable page, use the `screenshot` method with the `full_page=True` option.\n\n```python\npage.screenshot(path=\"screenshot.png\", full_page=True)\n```",
+      "contexts": [
+        "Full page screenshot is a screenshot of a full scrollable page, as if you had a very\ntall screen and the page could fit it entirely.\n\n```python\npage.screenshot(path=\"screenshot.png\", full_page=True)\n```",
+        "Most of the time, Playwright will automatically scroll for you before doing any actions. Therefore, you do not need to scroll explicitly.\n\n```python\n# Scrolls automatically so that button is visible\npage.get_by_role(\"button\").click()\n```\n\nHowever, in rare cases you might need to manually scroll. For example, you might want to force an \"infinite list\" to load more elements, or position the page for a specific screenshot. In such a case, the most reliable way is to find an element that you want to make visible at the bottom, and scroll it into view.\n\n```python\n# Scroll the footer into view, forcing an \"infinite list\" to load more content\npage.get_by_text(\"Footer text\").scroll_into_view_if_needed()\n```\n\nIf you would like to control the scrolling more precisely, use `mouse.wheel` or `locator.evaluate`:\n\n```python\n# Position the mouse and scroll with the mouse wheel\npage.get_by_test_id(\"scrolling-container\").hover()\npage.mouse.wheel(0, 10)\n\n# Alternatively, programmatically scroll a specific element\npage.get_by_test_id(\"scrolling-container\").evaluate(\"e => e.scrollTop += 100\")\n```",
+        "The viewport is included in the device but you can override it for some tests with `page.set_viewport_size`.\n\nTest file:\n\nThe same works inside a test file.\n\n```python\n# Create context with given viewport\ncontext = browser.new_context(\n  viewport={ 'width': 1280, 'height': 1024 }\n)\n\n# Resize viewport for individual page\npage.set_viewport_size({\"width\": 1600, \"height\": 1200})\n\n# Emulate high-DPI\ncontext = browser.new_context(\n  viewport={ 'width': 2560, 'height': 1440 },\n  device_scale_factor=2,\n)\n```",
+        "Sometimes it is useful to take a screenshot of a single element.\n\n```python\npage.locator(\".header\").screenshot(path=\"screenshot.png\")\n```"
+      ],
+      "retrieved_sources": [
+        "screenshots",
+        "input",
+        "emulation",
+        "screenshots"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.8821,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "hallucination": 0.5
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "screenshots#1",
+          "source": "screenshots",
+          "score": 0.7685
+        },
+        {
+          "id": "input#15",
+          "source": "input",
+          "score": 0.6833
+        },
+        {
+          "id": "emulation#3",
+          "source": "emulation",
+          "score": 0.6787
+        },
+        {
+          "id": "screenshots#3",
+          "source": "screenshots",
+          "score": 0.6768
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.047,
+        "generation": 10.976,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 30.41,
+        "answer_relevancy": 4.29,
+        "context_precision": 33.44,
+        "context_recall": 15.05,
+        "hallucination": 26.14
+      }
+    },
+    {
+      "id": "screenshot-buffer",
+      "question": "Can I capture a screenshot into memory instead of a file?",
+      "reference": "Yes. page.screenshot() without a path returns the image bytes, which you can process or encode, for example in base64.",
+      "sources": [
+        "screenshots"
+      ],
+      "answer": "Yes, you can capture a screenshot into memory by using the `page.screenshot()` method without specifying a `path`, which returns the image as bytes. You can then process these bytes as needed. For example:\n\n```python\nscreenshot_bytes = page.screenshot()\n```",
+      "contexts": [
+        "Rather than writing into a file, you can get a buffer with the image and post-process it or pass it to a third party pixel diff facility.\n\n```python\nscreenshot_bytes = page.screenshot()\nprint(base64.b64encode(screenshot_bytes).decode())\n```",
+        "Here is a quick way to capture a screenshot and save it into a file:\n\n```python\npage.screenshot(path=\"screenshot.png\")\n```\n\nScreenshots API accepts many parameters for image format, clip area, quality, etc. Make sure to check them out.",
+        "Full page screenshot is a screenshot of a full scrollable page, as if you had a very\ntall screen and the page could fit it entirely.\n\n```python\npage.screenshot(path=\"screenshot.png\", full_page=True)\n```",
+        "Sometimes it is useful to take a screenshot of a single element.\n\n```python\npage.locator(\".header\").screenshot(path=\"screenshot.png\")\n```"
+      ],
+      "retrieved_sources": [
+        "screenshots",
+        "screenshots",
+        "screenshots",
+        "screenshots"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.8828,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "hallucination": 1.0
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "screenshots#2",
+          "source": "screenshots",
+          "score": 0.7595
+        },
+        {
+          "id": "screenshots#0",
+          "source": "screenshots",
+          "score": 0.7386
+        },
+        {
+          "id": "screenshots#1",
+          "source": "screenshots",
+          "score": 0.6693
+        },
+        {
+          "id": "screenshots#3",
+          "source": "screenshots",
+          "score": 0.6641
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.044,
+        "generation": 8.744,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 46.1,
+        "answer_relevancy": 4.51,
+        "context_precision": 28.24,
+        "context_recall": 11.55,
+        "hallucination": 21.15
+      }
+    },
+    {
+      "id": "geolocation",
+      "question": "How do I emulate a geolocation in a browser context?",
+      "reference": "Create the context with geolocation={\"longitude\": ..., \"latitude\": ...} and grant the \"geolocation\" permission (permissions=[\"geolocation\"]); context.set_geolocation changes it later.",
+      "sources": [
+        "emulation"
+      ],
+      "answer": "To emulate geolocation in a browser context, set the `geolocation` parameter when creating the context and grant the `\"geolocation\"` permission. Here's how you can do it:\n\n```python\ncontext = browser.new_context(\n  geolocation={\"longitude\": 41.890221, \"latitude\": 12.492348},\n  permissions=[\"geolocation\"]\n)\n```",
+      "contexts": [
+        "Grant `\"geolocation\"` permissions and set geolocation to a specific area.\n\n```python\ncontext = browser.new_context(\n  geolocation={\"longitude\": 41.890221, \"latitude\": 12.492348},\n  permissions=[\"geolocation\"]\n)\n```\n\n<img height=\"1824\" width=\"2788\" alt=\"geolocation for italy on bing maps\" src=\"https://user-images.githubusercontent.com/13063165/220417670-bb22d815-f5cd-47c4-8562-0b88165eac27.png\" />\n\nChange the location later:\n\n```python\ncontext.set_geolocation({\"longitude\": 48.858455, \"latitude\": 2.294474})\n```\n\n**Note** you can only change geolocation for all pages in the context.",
+        "With Playwright you can test your app on any browser as well as emulate a real device such as a mobile phone or tablet. Simply configure the devices you would like to emulate and Playwright will simulate the browser behavior such as `\"userAgent\"`, `\"screenSize\"`, `\"viewport\"` and if it `\"hasTouch\"` enabled. You can also emulate the `\"geolocation\"`, `\"locale\"` and `\"timezone\"` for all tests or for a specific test as well as set the `\"permissions\"` to show notifications or change the `\"colorScheme\"`.",
+        "Emulate the browser Locale and Timezone which can be set globally for all tests in the config and then overridden for particular tests.\n\n```python\ncontext = browser.new_context(\n  locale='de-DE',\n  timezone_id='Europe/Berlin',\n)\n```\n\n<img height=\"1824\" width=\"2788\" alt=\"Bing in german lang and timezone\" src=\"https://user-images.githubusercontent.com/13063165/220416571-ccc96ab1-44bb-4579-8430-64502fc24a15.png\" />\n\n######\n\nNote that this only affects the browser timezone and locale, not the test runner timezone.\nTo set the test runner timezone, you can use the [`TZ` environment variable](https://nodejs.org/api/cli.html#tz).",
+        "Playwright comes with multiple built-in locators. To make tests resilient, we recommend prioritizing user-facing attributes and explicit contracts such as `page.get_by_role`.\n\nFor example, consider the following DOM structure.\n\n```html\n<button>Sign in</button>\n```\n\nLocate the element by its role of `button` with name \"Sign in\".\n\n```python\npage.get_by_role(\"button\", name=\"Sign in\").click()\n```\n\n:::note\nUse the code generator to generate a locator, and then edit it as you'd like.\n:::\n\nEvery time a locator is used for an action, an up-to-date DOM element is located in the page. In the snippet\nbelow, the underlying DOM element will be located twice, once prior to every action. This means that if the\nDOM changes in between the calls due to re-render, the new element corresponding to the\nlocator will be used.\n\n```python\nlocator = page.get_by_role(\"button\", name=\"Sign in\")\n\nlocator.hover()\nlocator.click()\n```\n\nNote that all methods that create a locator, such as `page.get_by_label`, are also available on the [Locator] and [FrameLocator] classes, so you can chain them and iteratively narrow down your locator."
+      ],
+      "retrieved_sources": [
+        "emulation",
+        "emulation",
+        "emulation",
+        "locators"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.9353,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "hallucination": 1.0
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "emulation#7",
+          "source": "emulation",
+          "score": 0.784
+        },
+        {
+          "id": "emulation#0",
+          "source": "emulation",
+          "score": 0.7174
+        },
+        {
+          "id": "emulation#5",
+          "source": "emulation",
+          "score": 0.7088
+        },
+        {
+          "id": "locators#2",
+          "source": "locators",
+          "score": 0.6714
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.043,
+        "generation": 16.539,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 55.43,
+        "answer_relevancy": 4.18,
+        "context_precision": 33.52,
+        "context_recall": 24.43,
+        "hallucination": 28.81
+      }
+    },
+    {
+      "id": "dark-mode",
+      "question": "How do I test my site in dark mode?",
+      "reference": "Create the context with color_scheme=\"dark\", or switch an existing page with page.emulate_media(color_scheme=\"dark\").",
+      "sources": [
+        "emulation"
+      ],
+      "answer": "The documentation provided does not cover this.",
+      "contexts": [
+        "Playwright runs browsers in headless mode by default. To change this behavior,\nuse `headless: false` as a launch option.\n\nYou can also use the `launch.slow_mo` option\nto slow down execution (by N milliseconds per operation) and follow along while debugging.\n\n```python\n# Chromium, Firefox, or WebKit\nchromium.launch(headless=False, slow_mo=100)\n```",
+        "When running in Debug Mode with `PWDEBUG=console`, a `playwright` object is available in the Developer tools console. Developer tools can help you to:\n\n- Inspect the DOM tree and **find element selectors**\n- **See console logs** during execution (or learn how to read logs via API)\n- Check **network activity** and other developer tools features\n\n<img height=\"1626\" width=\"2798\" alt=\"Browser Developer Tools with Playwright object\" src=\"https://user-images.githubusercontent.com/13063165/219128002-898f604d-9697-4b7f-95b5-a6a8260b7282.png\" />\n\nTo debug your tests using the browser developer tools, start by setting a breakpoint in your test to pause the execution using the `page.pause` method.\n\n```python\npage.pause()\n```\n\nOnce you have set a breakpoint in your test, you can then run your test with `PWDEBUG=console`.\n\n```bash\nPWDEBUG=console npx playwright test\n```\n\n```bash\n# Source directories in the list are separated by : on macos and linux and by ; on win.\nPWDEBUG=console PLAYWRIGHT_JAVA_SRC=<java source dirs> mvn test\n```\n\n```bash\nPWDEBUG=console pytest -s\n```\n\n```bash\nPWDEBUG=console dotnet test\n```",
+        "Set the `PWDEBUG` environment variable to run your Playwright tests in debug mode. This\nconfigures Playwright for debugging and opens the inspector. Additional useful defaults are configured when `PWDEBUG=1` is set:\n\n- Browsers launch in headed mode\n- Default timeout is set to 0 (= no timeout)\n\n```bash\nPWDEBUG=1 pytest -s\n```\n\n```bash\nPWDEBUG=1 dotnet test\n```",
+        "To run your tests, use the `pytest` command. This will run your tests on the Chromium browser by default. Tests run in headless mode by default meaning no browser window will be opened while running the tests and results will be seen in the terminal.\n\n```bash\npytest\n```"
+      ],
+      "retrieved_sources": [
+        "debug",
+        "debug",
+        "debug",
+        "running-tests-python"
+      ],
+      "metrics": {
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 0.0,
+        "answer_relevancy": 0.0,
+        "context_precision": 0.0,
+        "context_recall": 0.0,
+        "hallucination": 1.0
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "debug#16",
+          "source": "debug",
+          "score": 0.6815
+        },
+        {
+          "id": "debug#8",
+          "source": "debug",
+          "score": 0.6626
+        },
+        {
+          "id": "debug#1",
+          "source": "debug",
+          "score": 0.6602
+        },
+        {
+          "id": "running-tests-python#1",
+          "source": "running-tests-python",
+          "score": 0.6585
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.049,
+        "generation": 8.53,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 16.4,
+        "answer_relevancy": 3.39,
+        "context_precision": 32.18,
+        "context_recall": 20.26,
+        "hallucination": 28.16
+      }
+    },
+    {
+      "id": "offline-mode",
+      "question": "How can I emulate the network being offline?",
+      "reference": "Create the browser context with offline=True.",
+      "sources": [
+        "emulation"
+      ],
+      "answer": "To emulate the network being offline, set the `offline=True` parameter when creating a browser context:\n\n```python\ncontext = browser.new_context(offline=True)\n```",
+      "contexts": [
+        "Emulate the network being offline.\n\n```python\ncontext = browser.new_context(\n  offline=True\n)\n```\n\n:::note\nOffline emulation affects HTTP requests, such as page navigations, `fetch()` and `XMLHttpRequest`.\n\nWebSocket behavior depends on the browser and whether the connection is already established. Chromium and Firefox fail new WebSocket connections while offline, but do not close already-open connections. Chromium can defer incoming messages until the context goes back online, rather than lose them; Firefox can continue delivering messages while offline. WebKit can allow both new WebSocket connections and traffic on established connections while offline. Do not rely on offline emulation to test WebSocket message loss or connection closure.\n\nOffline emulation does not affect WebRTC traffic: established `RTCPeerConnection`s keep sending and receiving media over UDP. To test WebRTC connection loss, interrupt the connection outside the browser, for example by stopping the TURN server or using an OS-level firewall.\n:::",
+        "Playwright's built-in `browser_context.route` and `page.route` allow your tests to natively route requests and perform mocking and interception.\n\nIf you're using Playwright's native `browser_context.route` and `page.route`, and it appears network events are missing, disable Service Workers by setting `new_context.service_workers` to `'block'`.\n\nIt might be that you are using a mock tool such as Mock Service Worker (MSW). While this tool works out of the box for mocking responses, it adds its own Service Worker that takes over the network requests, hence making them invisible to `browser_context.route` and `page.route`. If you are interested in both network testing and mocking, consider using built-in `browser_context.route` and `page.route` for response mocking.\n\n######\n\nIf you're interested in not solely using Service Workers for testing and network mocking, but in routing and listening for requests made by Service Workers themselves, please see this guide.",
+        "You can monitor all the [Request]s and [Response]s:\n\n```python\nfrom playwright.sync_api import sync_playwright, Playwright\n\ndef run(playwright: Playwright):\n    chromium = playwright.chromium\n    browser = chromium.launch()\n    page = browser.new_page()\n    # Subscribe to \"request\" and \"response\" events.\n    page.on(\"request\", lambda request: print(\">>\", request.method, request.url))\n    page.on(\"response\", lambda response: print(\"<<\", response.status, response.url))\n    page.goto(\"https://example.com\")\n    browser.close()\n\nwith sync_playwright() as playwright:\n    run(playwright)\n```\n\nOr wait for a network response after the button click with `page.wait_for_response`:\n\n```python\n# Use a glob url pattern\nwith page.expect_response(\"**/api/fetch_data\") as response_info:\n    page.get_by_text(\"Update\").click()\nresponse = response_info.value\n```",
+        "Playwright supports [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API) inspection, mocking and modifying out of the box. See our API mocking guide to learn how to mock WebSockets.\n\nEvery time a WebSocket is created, the `web_socket` event is fired. This event contains the [WebSocket] instance for further web socket frames inspection:\n\n```python\ndef on_web_socket(ws):\n    print(f\"WebSocket opened: {ws.url}\")\n    ws.on(\"framesent\", lambda payload: print(payload))\n    ws.on(\"framereceived\", lambda payload: print(payload))\n    ws.on(\"close\", lambda payload: print(\"WebSocket closed\"))\n\npage.on(\"websocket\", on_web_socket)\n```"
+      ],
+      "retrieved_sources": [
+        "emulation",
+        "network",
+        "network",
+        "network"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.9159,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "hallucination": 1.0
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "emulation#11",
+          "source": "emulation",
+          "score": 0.7449
+        },
+        {
+          "id": "network#17",
+          "source": "network",
+          "score": 0.6285
+        },
+        {
+          "id": "network#4",
+          "source": "network",
+          "score": 0.6219
+        },
+        {
+          "id": "network#16",
+          "source": "network",
+          "score": 0.6176
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.048,
+        "generation": 12.585,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 34.21,
+        "answer_relevancy": 4.27,
+        "context_precision": 34.21,
+        "context_recall": 17.34,
+        "hallucination": 30.23
+      }
+    },
+    {
+      "id": "locale-timezone",
+      "question": "How do I set the locale and timezone for a test?",
+      "reference": "Pass locale (for example \"de-DE\") and timezone_id (for example \"Europe/Berlin\") when creating the browser context.",
+      "sources": [
+        "emulation"
+      ],
+      "answer": "To set the locale and timezone for a test, you can configure the `browser.new_context` with the desired values. Here's an example:\n\n```python\ncontext = browser.new_context(\n  locale='de-DE',\n  timezone_id='Europe/Berlin',\n)\n```\n\nThis sets the locale to German (Germany) and the timezone to Europe/Berlin for all pages in the context.",
+      "contexts": [
+        "Emulate the browser Locale and Timezone which can be set globally for all tests in the config and then overridden for particular tests.\n\n```python\ncontext = browser.new_context(\n  locale='de-DE',\n  timezone_id='Europe/Berlin',\n)\n```\n\n<img height=\"1824\" width=\"2788\" alt=\"Bing in german lang and timezone\" src=\"https://user-images.githubusercontent.com/13063165/220416571-ccc96ab1-44bb-4579-8430-64502fc24a15.png\" />\n\n######\n\nNote that this only affects the browser timezone and locale, not the test runner timezone.\nTo set the test runner timezone, you can use the [`TZ` environment variable](https://nodejs.org/api/cli.html#tz).",
+        "By default, `page.get_by_test_id` will locate elements based on the `data-testid` attribute, but you can configure it in your test config or by calling `selectors.set_test_id_attribute`.\n\nSet the test id to use a custom data attribute for your tests.\n\n```python\nplaywright.selectors.set_test_id_attribute(\"data-pw\")\n```\n\nIn your html you can now use `data-pw` as your test id instead of the default `data-testid`.\n\n```html\n<button data-pw=\"directions\">Itinéraire</button>\n```\n\nAnd then locate the element as you would normally do:\n\n```python\npage.get_by_test_id(\"directions\").click()\n```",
+        "**Customizing fixture options**: For `browser` and `context` fixtures, use the following fixtures to define custom launch options.\n\n- `browser_type_launch_args`: Override launch arguments for `browser_type.launch`. It should return a Dict.\n- `browser_context_args`: Override the options for `browser.new_context`. It should return a Dict.\n- `connect_options`: Connect to an existing browser via WebSocket endpoint. It should return a Dict with `browser_type.connect` options.\n\nIts also possible to override the context options (`browser.new_context`) for a single test by using the `browser_context_args` marker:\n\n```python\nimport pytest\n\n@pytest.mark.browser_context_args(timezone_id=\"Europe/Berlin\", locale=\"en-GB\")\ndef test_browser_context_args(page):\n    assert page.evaluate(\"window.navigator.userAgent\") == \"Europe/Berlin\"\n    assert page.evaluate(\"window.navigator.languages\") == [\"de-DE\"]\n```",
+        "Grant `\"geolocation\"` permissions and set geolocation to a specific area.\n\n```python\ncontext = browser.new_context(\n  geolocation={\"longitude\": 41.890221, \"latitude\": 12.492348},\n  permissions=[\"geolocation\"]\n)\n```\n\n<img height=\"1824\" width=\"2788\" alt=\"geolocation for italy on bing maps\" src=\"https://user-images.githubusercontent.com/13063165/220417670-bb22d815-f5cd-47c4-8562-0b88165eac27.png\" />\n\nChange the location later:\n\n```python\ncontext.set_geolocation({\"longitude\": 48.858455, \"latitude\": 2.294474})\n```\n\n**Note** you can only change geolocation for all pages in the context."
+      ],
+      "retrieved_sources": [
+        "emulation",
+        "locators",
+        "test-runners-python",
+        "emulation"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.8931,
+        "context_precision": 0.8333,
+        "context_recall": 1.0,
+        "hallucination": 0.2
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "emulation#5",
+          "source": "emulation",
+          "score": 0.8184
+        },
+        {
+          "id": "locators#12",
+          "source": "locators",
+          "score": 0.684
+        },
+        {
+          "id": "test-runners-python#5",
+          "source": "test-runners-python",
+          "score": 0.669
+        },
+        {
+          "id": "emulation#7",
+          "source": "emulation",
+          "score": 0.6685
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.044,
+        "generation": 17.357,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 51.52,
+        "answer_relevancy": 5.1,
+        "context_precision": 38.6,
+        "context_recall": 21.1,
+        "hallucination": 334.35
+      }
+    },
+    {
+      "id": "block-images",
+      "question": "How do I block all image requests on a page?",
+      "reference": "Abort them with routing, for example page.route(\"**/*.{png,jpg,jpeg}\", lambda route: route.abort()), or abort when route.request.resource_type == \"image\".",
+      "sources": [
+        "network"
+      ],
+      "answer": "To block all image requests, use the `page.route` method with a glob pattern that matches all image URLs and call `route.abort()`.\n\n```python\npage.route(\"**/*.{png,jpg,jpeg}\", lambda route: route.abort())\n```",
+      "contexts": [
+        "You can abort requests using `page.route` and `route.abort`.\n\n```python\npage.route(\"**/*.{png,jpg,jpeg}\", lambda route: route.abort())\n\n# Abort based on the request type\npage.route(\"**/*\", lambda route: route.abort() if route.request.resource_type == \"image\"  else route.continue_())\n```",
+        "Playwright uses simplified glob patterns for URL matching in network interception methods like `page.route` or `page.wait_for_response`. These patterns support basic wildcards:\n\n1. Asterisks:\n  - A single `*` matches any characters except `/`\n  - A double `**` matches any characters including `/`\n1. Question mark `?` matches only question mark `?`. If you want to match any character, use `*` instead.\n1. Curly braces `{}` can be used to match a list of options separated by commas `,`\n1. Backslash `\\` can be used to escape any of special characters (note to escape backslash itself as `\\\\`)\n\nExamples:\n- `https://example.com/*.js` matches `https://example.com/file.js` but not `https://example.com/path/file.js`\n- `https://example.com/?page=1` matches `https://example.com/?page=1` but not `https://example.com`\n- `**/*.js` matches both `https://example.com/file.js` and `https://example.com/path/file.js`\n- `**/*.{png,jpg,jpeg}` matches all image requests\n\nImportant notes:",
+        "All images should have an `alt` attribute that describes the image. You can locate an image based on the text alternative using `page.get_by_alt_text`.\n\nFor example, consider the following DOM structure.\n\n```html\n<img alt=\"playwright logo\" src=\"/img/playwright-logo.svg\" width=\"100\" />\n```\n\nYou can click on the image after locating it by the text alternative:\n\n```python\npage.get_by_alt_text(\"playwright logo\").click()\n```\n\n:::note[When to use alt locators]\nUse this locator when your element supports alt text such as `img` and `area` elements.\n:::",
+        "When you have elements with various similarities, you can use the `locator.filter` method to select the right one. You can also chain multiple filters to narrow down the selection.\n\nFor example, consider the following DOM structure:\n\n```html\n<ul>\n  <li>\n    <div>John</div>\n    <div><button>Say hello</button></div>\n  </li>\n  <li>\n    <div>Mary</div>\n    <div><button>Say hello</button></div>\n  </li>\n  <li>\n    <div>John</div>\n    <div><button>Say goodbye</button></div>\n  </li>\n  <li>\n    <div>Mary</div>\n    <div><button>Say goodbye</button></div>\n  </li>\n</ul>\n```\n\nTo take a screenshot of the row with \"Mary\" and \"Say goodbye\":\n\n```python\nrow_locator = page.get_by_role(\"listitem\")\n\nrow_locator.filter(has_text=\"Mary\").filter(\n    has=page.get_by_role(\"button\", name=\"Say goodbye\")\n).screenshot(path=\"screenshot.png\")\n```\n\nYou should now have a \"screenshot.png\" file in your project's root directory."
+      ],
+      "retrieved_sources": [
+        "network",
+        "network",
+        "locators",
+        "locators"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.9046,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "hallucination": 0.5
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "network#9",
+          "source": "network",
+          "score": 0.6549
+        },
+        {
+          "id": "network#14",
+          "source": "network",
+          "score": 0.6135
+        },
+        {
+          "id": "locators#9",
+          "source": "locators",
+          "score": 0.6003
+        },
+        {
+          "id": "locators#33",
+          "source": "locators",
+          "score": 0.5995
+        }
+      ],
+      "timings_s": {
+        "retrieval": 2.873,
+        "generation": 14.206,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 59.07,
+        "answer_relevancy": 4.87,
+        "context_precision": 38.9,
+        "context_recall": 20.67,
+        "hallucination": 31.25
+      }
+    },
+    {
+      "id": "http-auth",
+      "question": "How do I log in to a site protected by HTTP basic authentication?",
+      "reference": "Create the browser context with http_credentials={\"username\": ..., \"password\": ...}.",
+      "sources": [
+        "network"
+      ],
+      "answer": "To log in to a site protected by HTTP basic authentication, you can provide the username and password in the `browser.new_context` method as shown in the example:\n\n```python\ncontext = browser.new_context(\n    http_credentials={\"username\": \"bill\", \"password\": \"pa55w0rd\"}\n)\npage = context.new_page()\npage.goto(\"https://example.com\")\n```",
+      "contexts": [
+        "Perform HTTP Authentication.\n\n```python\ncontext = browser.new_context(\n    http_credentials={\"username\": \"bill\", \"password\": \"pa55w0rd\"}\n)\npage = context.new_page()\npage.goto(\"https://example.com\")\n```",
+        "The Playwright API can automate interaction with a login form.\n\nThe following example logs into GitHub. Once these steps are executed,\nthe browser context will be authenticated.\n\n```python\npage = context.new_page()\npage.goto('https://github.com/login')\n\n# Interact with login form\npage.get_by_label(\"Username or email address\").fill(\"username\")\npage.get_by_label(\"Password\").fill(\"password\")\npage.get_by_role(\"button\", name=\"Sign in\").click()\n# Continue with the test\n```\n\nRedoing login for every test can slow down test execution. To mitigate that, reuse\nexisting authentication state instead.",
+        "Playwright provides a way to reuse the signed-in state in the tests. That way you can log\nin only once and then skip the log in step for all of the tests.\n\nWeb apps use cookie-based or token-based authentication, where authenticated state is stored as [cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies), in [local storage](https://developer.mozilla.org/en-US/docs/Web/API/Storage), in [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API), or as passkeys ([WebAuthn](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API) credentials). Playwright provides `browser_context.storage_state` method that can be used to retrieve storage state from authenticated contexts and then create new contexts with prepopulated state.\n\nCookies, local storage, IndexedDB and virtual WebAuthn credentials (passkeys) can be used across different browsers. They depend on your application's authentication model which may require some combination of cookies, local storage, IndexedDB or passkeys.",
+        "Regardless of the authentication strategy you choose, you are likely to store authenticated browser state on the file system.\n\nWe recommend to create `playwright/.auth` directory and add it to your `.gitignore`. Your authentication routine will produce authenticated browser state and save it to a file in this `playwright/.auth` directory. Later on, tests will reuse this state and start already authenticated.\n\n:::danger\nThe browser state file may contain sensitive cookies and headers that could be used to impersonate you or your test account.\nWe strongly discourage checking them into private or public repositories.\n:::\n\n```bash\nmkdir -p playwright/.auth\necho $'\\nplaywright/.auth' >> .gitignore\n```"
+      ],
+      "retrieved_sources": [
+        "network",
+        "auth",
+        "auth",
+        "auth"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.9046,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "hallucination": 0.25
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "network#2",
+          "source": "network",
+          "score": 0.7347
+        },
+        {
+          "id": "auth#2",
+          "source": "auth",
+          "score": 0.716
+        },
+        {
+          "id": "auth#3",
+          "source": "auth",
+          "score": 0.7084
+        },
+        {
+          "id": "auth#1",
+          "source": "auth",
+          "score": 0.7059
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.049,
+        "generation": 16.869,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 75.76,
+        "answer_relevancy": 6.99,
+        "context_precision": 35.31,
+        "context_recall": 15.47,
+        "hallucination": 28.4
+      }
+    },
+    {
+      "id": "proxy",
+      "question": "How do I make the browser use an HTTP proxy?",
+      "reference": "Pass proxy={\"server\": \"http://myproxy.com:3128\"} (optionally with username and password) to browser launch, or set proxy per context in browser.new_context.",
+      "sources": [
+        "network"
+      ],
+      "answer": "To make the browser use an HTTP proxy, configure it globally when launching the browser or per context. Here's an example of setting it globally:\n\n```python\nbrowser = chromium.launch(proxy={\"server\": \"http://myproxy.com:3128\"})\n```",
+      "contexts": [
+        "You can configure pages to load over the HTTP(S) proxy or SOCKSv5. Proxy can be either set globally\nfor the entire browser, or for each browser context individually.\n\nYou can optionally specify username and password for HTTP(S) proxy, you can also specify hosts to bypass the `new_context.proxy` for.\n\nHere is an example of a global proxy:\n\n```python\nbrowser = chromium.launch(proxy={\n  \"server\": \"http://myproxy.com:3128\",\n  \"username\": \"usr\",\n  \"password\": \"pwd\"\n})\n```\n\nIts also possible to specify it per context:\n\n```python\nbrowser = chromium.launch()\ncontext = browser.new_context(proxy={\"server\": \"http://myproxy.com:3128\"})\n```",
+        "Playwright provides APIs to **monitor** and **modify** browser network traffic, both HTTP and HTTPS. Any requests that a page does, including [XHRs](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest) and\n[fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) requests, can be tracked, modified and handled.",
+        "Perform HTTP Authentication.\n\n```python\ncontext = browser.new_context(\n    http_credentials={\"username\": \"bill\", \"password\": \"pa55w0rd\"}\n)\npage = context.new_page()\npage.goto(\"https://example.com\")\n```",
+        "Web APIs are usually implemented as HTTP endpoints. Playwright provides APIs to **mock** and **modify** network traffic, both HTTP and HTTPS. Any requests that a page does, including [XHRs](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest) and\n[fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) requests, can be tracked, modified and mocked. With Playwright you can also mock using HAR files that contain multiple network requests made by the page."
+      ],
+      "retrieved_sources": [
+        "network",
+        "network",
+        "network",
+        "mock"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 0.75,
+        "answer_relevancy": 0.8934,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "hallucination": 0.5
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "network#3",
+          "source": "network",
+          "score": 0.7818
+        },
+        {
+          "id": "network#0",
+          "source": "network",
+          "score": 0.6923
+        },
+        {
+          "id": "network#2",
+          "source": "network",
+          "score": 0.6817
+        },
+        {
+          "id": "mock#0",
+          "source": "mock",
+          "score": 0.6796
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.043,
+        "generation": 11.007,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 43.98,
+        "answer_relevancy": 4.69,
+        "context_precision": 35.64,
+        "context_recall": 16.48,
+        "hallucination": 28.37
+      }
+    },
+    {
+      "id": "mock-api",
+      "question": "How do I mock an API response so that my test does not call the real backend?",
+      "reference": "Register page.route for the API URL and fulfill the request with route.fulfill(json=...) instead of letting it reach the network.",
+      "sources": [
+        "mock"
+      ],
+      "answer": "To mock an API response so your test does not call the real backend, use the `page.route()` method to intercept the API request and fulfill it with a custom response. Here's an example:\n\n```python\ndef test_mock_api_response(page: Page):\n    def handle(route: Route):\n        route.fulfill(json=[{\"name\": \"Strawberry\", \"id\": 21}])\n\n    page.route(\"*/**/api/v1/fruits\", handle)\n    page.goto(\"https://demo.playwright.dev/api-mocking\")\n    expect(page.get_by_text(\"Strawberry\")).to_be_visible()\n```",
+      "contexts": [
+        "In the trace of our test we can see that the API was called and the response was modified.\n<img src=\"https://github.com/microsoft/playwright/assets/13063165/8b8dd82d-1b3e-428e-871b-840581fed439\" alt=\"trace of test showing api being called and fulfilled\" width=\"2946\" height=\"1902\" />\n\nBy inspecting the response we can see that our new fruit was added to the list.\n<img src=\"https://github.com/microsoft/playwright/assets/13063165/03e6c87c-4ecc-47e8-9ca0-30fface25e9d\" alt=\"trace of test showing the mock response\" width=\"2946\" height=\"1902\" />\n\nRead more about advanced networking.",
+        "The following code will intercept all the calls to `*/**/api/v1/fruits` and will return a custom response instead. No requests to the API will be made. The test goes to the URL that uses the mocked route and asserts that mock data is present on the page.\n\n```python\ndef test_mock_the_fruit_api(page: Page):\n    def handle(route: Route):\n        json = [{\"name\": \"Strawberry\", \"id\": 21}]\n        # fulfill the route with the mock data\n        route.fulfill(json=json)\n\n    # Intercept the route to the fruit API\n    page.route(\"*/**/api/v1/fruits\", handle)\n\n    # Go to the page\n    page.goto(\"https://demo.playwright.dev/api-mocking\")\n\n    # Assert that the Strawberry fruit is visible\n    expect(page.get_by_text(\"Strawberry\")).to_be_visible()\n```\n\nYou can see from the trace of the example test that the API was never called, it was however fulfilled with the mock data.\n<img src=\"https://github.com/microsoft/playwright/assets/13063165/3dc14cbf-c100-4efc-ac21-d7b52d698b53\" alt=\"api mocking trace\" width=\"2946\" height=\"1902\" />\n\nRead more about advanced networking.",
+        "Sometimes, it is essential to make an API request, but the response needs to be patched to\nallow for reproducible testing. In that case, instead of mocking the request, one\ncan perform the request and fulfill it with the modified response.\n\nIn the example below we intercept the call to the fruit API and add a new fruit called 'Loquat', to the data. We then go to the url and assert that this data is there:\n\n```python\ndef test_gets_the_json_from_api_and_adds_a_new_fruit(page: Page):\n    def handle(route: Route):\n        response = route.fetch()\n        json = response.json()\n        json.append({ \"name\": \"Loquat\", \"id\": 100})\n        # Fulfill using the original response, while patching the response body\n        # with the given JSON object.\n        route.fulfill(response=response, json=json)\n\n    page.route(\"https://demo.playwright.dev/api-mocking/api/v1/fruits\", handle)\n\n    # Go to the page\n    page.goto(\"https://demo.playwright.dev/api-mocking\")\n\n    # Assert that the new fruit is visible\n    expect(page.get_by_text(\"Loquat\", exact=True)).to_be_visible()\n```",
+        "Check out our API mocking guide to learn more on how to\n- mock API requests and never hit the API\n- perform the API request and modify the response\n- use HAR files to mock network requests."
+      ],
+      "retrieved_sources": [
+        "mock",
+        "mock",
+        "mock",
+        "network"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.9817,
+        "context_precision": 0.6389,
+        "context_recall": 1.0,
+        "hallucination": 0.75
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "mock#3",
+          "source": "mock",
+          "score": 0.7624
+        },
+        {
+          "id": "mock#1",
+          "source": "mock",
+          "score": 0.7618
+        },
+        {
+          "id": "mock#2",
+          "source": "mock",
+          "score": 0.7474
+        },
+        {
+          "id": "network#1",
+          "source": "network",
+          "score": 0.7447
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.049,
+        "generation": 23.378,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 86.17,
+        "answer_relevancy": 5.25,
+        "context_precision": 35.91,
+        "context_recall": 18.94,
+        "hallucination": 27.22
+      }
+    },
+    {
+      "id": "har-replay",
+      "question": "How can I record network traffic to a HAR file and replay it in tests?",
+      "reference": "Use page.route_from_har with a HAR path and URL pattern; update=True records (or updates) the HAR from real traffic, and update=False replays the requests from the file.",
+      "sources": [
+        "mock"
+      ],
+      "answer": "To record network traffic to a HAR file, use `browser.new_context.record_har_path` when creating a browser context. To replay the HAR file in tests, use `page.route_from_har` or `browser_context.route_from_har` with the `update=False` option to serve responses from the HAR file instead of hitting the API.\n\n```python\ndef test_replay_har(page: Page):\n    page.route_from_har(\"./hars/fruit.har\", url=\"*/**/api/v1/fruits\", update=False)\n    page.goto(\"https://demo.playwright.dev/api-mocking\")\n```",
+      "contexts": [
+        "To record a HAR file we use `page.route_from_h_a_r` or `browser_context.route_from_h_a_r` method. This method takes in the path to the HAR file and an optional object of options.\nThe options object can contain the URL so that only requests with the URL matching the specified glob pattern will be served from the HAR File. If not specified, all requests will be served from the HAR file.\n\nSetting `update` option to true will create or update the HAR file with the actual network information instead of serving the requests from the HAR file. Use it when creating a test to populate the HAR with real data.\n\n####\n\nAlternatively, you can also record HAR files by using the `new_context.record_har` option in `browser.new_context` when creating a browser context. This allows you to capture all network traffic for the entire context until the context is closed.\n\n####\n\nAlternatively, you can also record HAR files by using the `new_context.record_har_path` option in `browser.new_context` when creating a browser context. This allows you to capture all network traffic for the entire context until the context is closed.",
+        "A HAR file is an [HTTP Archive](http://www.softwareishard.com/blog/har-12-spec/) file that contains a record of all the network requests that are made when a page is loaded. It contains information about the request and response headers, cookies, content, timings, and more. You can use HAR files to mock network requests in your tests. You'll need to:\n\n1. Record a HAR file.\n1. Commit the HAR file alongside the tests.\n1. Route requests using the saved HAR files in the tests.",
+        "If we inspect the response we can see our new fruit was added to the JSON, which was done by manually updating the hashed `.txt` file inside the `hars` folder.\n<img src=\"https://github.com/microsoft/playwright/assets/13063165/db3117fc-7b02-4973-9a51-29e213261a6a\" alt=\"trace showing response from HAR file\" width=\"2946\" height=\"1902\" />\n\nHAR replay matches URL and HTTP method strictly. For POST requests, it also matches POST payloads strictly. If multiple recordings match a request, the one with the most matching headers is picked. An entry resulting in a redirect will be followed automatically.\n\nSimilar to when recording, if given HAR file name ends with `.zip`, it is considered an archive containing the HAR file along with network payloads stored as separate entries. You can also extract this archive, edit payloads or HAR log manually and point to the extracted har file. All the payloads will be resolved relative to the extracted har file on the file system.",
+        "Now that you have the HAR file recorded and modified the mock data, it can be used to serve matching responses in the test. For this, just turn off or simply remove the `update` option. This will run the test against the HAR file instead of hitting the API.\n\n```python\ndef test_gets_the_json_from_har_and_checks_the_new_fruit_has_been_added(page: Page):\n    # Replay API requests from HAR.\n    # Either use a matching response from the HAR,\n    # or abort the request if nothing matches.\n    page.route_from_har(\"./hars/fruit.har\", url=\"*/**/api/v1/fruits\", update=False)\n\n    # Go to the page\n    page.goto(\"https://demo.playwright.dev/api-mocking\")\n\n    # Assert that the Playwright fruit is visible\n    expect(page.get_by_text(\"Playwright\", exact=True)).to_be_visible()\n```\n\nIn the trace of our test we can see that the route was fulfilled from the HAR file and the API was not called.\n<img src=\"https://github.com/microsoft/playwright/assets/13063165/1bd7ab66-ea4f-43c2-a4e5-ca17d4837ff1\" alt=\"trace showing the HAR file being used\" width=\"2946\" height=\"1902\" />"
+      ],
+      "retrieved_sources": [
+        "mock",
+        "mock",
+        "mock",
+        "mock"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 0.8,
+        "answer_relevancy": 0.883,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "hallucination": 0.75
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "mock#5",
+          "source": "mock",
+          "score": 0.8151
+        },
+        {
+          "id": "mock#4",
+          "source": "mock",
+          "score": 0.8028
+        },
+        {
+          "id": "mock#9",
+          "source": "mock",
+          "score": 0.7666
+        },
+        {
+          "id": "mock#8",
+          "source": "mock",
+          "score": 0.733
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.051,
+        "generation": 23.265,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 77.47,
+        "answer_relevancy": 5.42,
+        "context_precision": 44.18,
+        "context_recall": 29.82,
+        "hallucination": 36.19
+      }
+    },
+    {
+      "id": "reuse-auth-state",
+      "question": "How do I log in once and reuse the signed-in state in other browser contexts?",
+      "reference": "Save the state from an authenticated context with context.storage_state(path=\"state.json\") and create new contexts with browser.new_context(storage_state=\"state.json\").",
+      "sources": [
+        "auth"
+      ],
+      "answer": "更大的问题，你可以通过以下步骤实现登录一次并重用已登录状态：\n\n1. 使用 `context.storage_state()` 方法保存认证状态到文件。\n2. 在创建新的浏览器上下文时，使用 `storage_state` 参数加载已保存的状态。\n\n示例代码：\n```python\n# 保存认证状态\nstorage = context.storage_state(path=\"state.json\")\n\n# 加载已保存的认证状态\ncontext = browser.new_context(storage_state=\"state.json\")\n```",
+      "contexts": [
+        "Playwright provides a way to reuse the signed-in state in the tests. That way you can log\nin only once and then skip the log in step for all of the tests.\n\nWeb apps use cookie-based or token-based authentication, where authenticated state is stored as [cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies), in [local storage](https://developer.mozilla.org/en-US/docs/Web/API/Storage), in [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API), or as passkeys ([WebAuthn](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API) credentials). Playwright provides `browser_context.storage_state` method that can be used to retrieve storage state from authenticated contexts and then create new contexts with prepopulated state.\n\nCookies, local storage, IndexedDB and virtual WebAuthn credentials (passkeys) can be used across different browsers. They depend on your application's authentication model which may require some combination of cookies, local storage, IndexedDB or passkeys.",
+        "The following code snippet retrieves state from an authenticated context and creates a new context with that state. If your application stores authentication tokens in IndexedDB, such as Firebase Authentication, enable `storage_state.indexed_d_b` when saving the state. IndexedDB is not included in the snapshot by default.\n\n```python\n# Save storage state into the file.\nstorage = context.storage_state(path=\"state.json\")\n\n# Create a new context with the saved storage state.\ncontext = browser.new_context(storage_state=\"state.json\")\n```",
+        "The Playwright API can automate interaction with a login form.\n\nThe following example logs into GitHub. Once these steps are executed,\nthe browser context will be authenticated.\n\n```python\npage = context.new_page()\npage.goto('https://github.com/login')\n\n# Interact with login form\npage.get_by_label(\"Username or email address\").fill(\"username\")\npage.get_by_label(\"Password\").fill(\"password\")\npage.get_by_role(\"button\", name=\"Sign in\").click()\n# Continue with the test\n```\n\nRedoing login for every test can slow down test execution. To mitigate that, reuse\nexisting authentication state instead.",
+        "Reusing authenticated state covers [cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies), [local storage](https://developer.mozilla.org/en-US/docs/Web/API/Storage), [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) and passkey ([WebAuthn](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API)) based authentication. Rarely, [session storage](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage) is used for storing information associated with the signed-in state. Session storage is specific to a particular domain and is not persisted across page loads. Playwright does not provide API to persist session storage, but the following snippet can be used to save/load session storage."
+      ],
+      "retrieved_sources": [
+        "auth",
+        "auth",
+        "auth",
+        "auth"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.9158,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "hallucination": 1.0
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "auth#3",
+          "source": "auth",
+          "score": 0.7932
+        },
+        {
+          "id": "auth#4",
+          "source": "auth",
+          "score": 0.7328
+        },
+        {
+          "id": "auth#2",
+          "source": "auth",
+          "score": 0.7077
+        },
+        {
+          "id": "auth#5",
+          "source": "auth",
+          "score": 0.6702
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.051,
+        "generation": 17.553,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 61.38,
+        "answer_relevancy": 4.4,
+        "context_precision": 32.05,
+        "context_recall": 18.02,
+        "hallucination": 26.09
+      }
+    },
+    {
+      "id": "session-storage",
+      "question": "Is session storage included when I reuse authenticated state, and how can I restore it?",
+      "reference": "No. Storage state covers cookies, local storage and IndexedDB, not session storage. Save sessionStorage with page.evaluate and restore it in the new context with an init script (context.add_init_script).",
+      "sources": [
+        "auth"
+      ],
+      "answer": "Session storage is not included when reusing authenticated state by default. To restore session storage, you can use the `add_init_script` method to inject the session storage data into a new context, as shown in the code snippet provided in the context. This approach allows you to manually set the session storage for the new context.",
+      "contexts": [
+        "Reusing authenticated state covers [cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies), [local storage](https://developer.mozilla.org/en-US/docs/Web/API/Storage), [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) and passkey ([WebAuthn](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API)) based authentication. Rarely, [session storage](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage) is used for storing information associated with the signed-in state. Session storage is specific to a particular domain and is not persisted across page loads. Playwright does not provide API to persist session storage, but the following snippet can be used to save/load session storage.",
+        "The following code snippet retrieves state from an authenticated context and creates a new context with that state. If your application stores authentication tokens in IndexedDB, such as Firebase Authentication, enable `storage_state.indexed_d_b` when saving the state. IndexedDB is not included in the snapshot by default.\n\n```python\n# Save storage state into the file.\nstorage = context.storage_state(path=\"state.json\")\n\n# Create a new context with the saved storage state.\ncontext = browser.new_context(storage_state=\"state.json\")\n```",
+        "Playwright provides a way to reuse the signed-in state in the tests. That way you can log\nin only once and then skip the log in step for all of the tests.\n\nWeb apps use cookie-based or token-based authentication, where authenticated state is stored as [cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies), in [local storage](https://developer.mozilla.org/en-US/docs/Web/API/Storage), in [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API), or as passkeys ([WebAuthn](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API) credentials). Playwright provides `browser_context.storage_state` method that can be used to retrieve storage state from authenticated contexts and then create new contexts with prepopulated state.\n\nCookies, local storage, IndexedDB and virtual WebAuthn credentials (passkeys) can be used across different browsers. They depend on your application's authentication model which may require some combination of cookies, local storage, IndexedDB or passkeys.",
+        "```python\nimport os\n# Get session storage and store as env variable\nsession_storage = page.evaluate(\"() => JSON.stringify(sessionStorage)\")\nos.environ[\"SESSION_STORAGE\"] = session_storage\n\n# Set session storage in a new context\nsession_storage = os.environ[\"SESSION_STORAGE\"]\nescaped_session_storage = session_storage.replace(\"\\\\\", \"\\\\\\\\\").replace(\"'\", \"\\\\'\")\ncontext.add_init_script(\"\"\"(storage => {\n  if (window.location.hostname === 'example.com') {\n    const entries = JSON.parse(storage)\n    for (const [key, value] of Object.entries(entries)) {\n      window.sessionStorage.setItem(key, value)\n    }\n  }\n})('\"\"\" + escaped_session_storage + \"')\")\n```"
+      ],
+      "retrieved_sources": [
+        "auth",
+        "auth",
+        "auth",
+        "auth"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.9563,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "hallucination": 1.0
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "auth#5",
+          "source": "auth",
+          "score": 0.7874
+        },
+        {
+          "id": "auth#4",
+          "source": "auth",
+          "score": 0.7422
+        },
+        {
+          "id": "auth#3",
+          "source": "auth",
+          "score": 0.703
+        },
+        {
+          "id": "auth#6",
+          "source": "auth",
+          "score": 0.6847
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.052,
+        "generation": 14.513,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 47.7,
+        "answer_relevancy": 4.03,
+        "context_precision": 33.26,
+        "context_recall": 22.26,
+        "hallucination": 27.34
+      }
+    },
+    {
+      "id": "actionability-click",
+      "question": "Which checks does Playwright perform on an element before clicking it?",
+      "reference": "The locator must resolve to exactly one element, and the element must be visible, stable (not animating), receive events (not obscured), enabled and not inert.",
+      "sources": [
+        "actionability"
+      ],
+      "answer": "Playwright performs the following checks on an element before clicking it:  \n- The locator resolves to exactly one element.  \n- The element is Visible.  \n- The element is Stable, as in not animating or completed animation.  \n- The element Receives Events, as in not obscured by other elements.  \n- The element is Enabled.  \n- The element is Not Inert.  \n\nIf any of these checks fail within the given timeout, a `TimeoutError` is raised.",
+      "contexts": [
+        "Playwright performs a range of actionability checks on the elements before making actions to ensure these actions\nbehave as expected. It auto-waits for all the relevant checks to pass and only then performs the requested action. If the required checks do not pass within the given `timeout`, action fails with the `TimeoutError`.\n\nFor example, for `locator.click`, Playwright will ensure that:\n- locator resolves to exactly one element\n- element is [Visible]\n- element is [Stable], as in not animating or completed animation\n- element [Receives Events], as in not obscured by other elements\n- element is [Enabled]\n- element is [Not Inert]\n\nHere is the complete list of actionability checks performed for each action:",
+        "Playwright can interact with HTML Input elements such as text inputs, checkboxes, radio buttons, select options, mouse clicks, type characters, keys and shortcuts as well as upload files and focus elements.",
+        "Generates selector for the given element. For example, select an element in the Elements panel and pass `$0`:\n\n```bash\nplaywright.selector($0)\n\n\"div[id=\"glow-ingress-block\"] >> text=/.*Hello.*/\"\n```",
+        "Reveal element in the Elements panel.\n\n```bash\nplaywright.inspect('text=Log in')\n```"
+      ],
+      "retrieved_sources": [
+        "actionability",
+        "input",
+        "debug",
+        "debug"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.9964,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "hallucination": 0.5
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "actionability#0",
+          "source": "actionability",
+          "score": 0.8344
+        },
+        {
+          "id": "input#0",
+          "source": "input",
+          "score": 0.8056
+        },
+        {
+          "id": "debug#14",
+          "source": "debug",
+          "score": 0.7939
+        },
+        {
+          "id": "debug#12",
+          "source": "debug",
+          "score": 0.7908
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.045,
+        "generation": 13.507,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 59.5,
+        "answer_relevancy": 4.76,
+        "context_precision": 27.35,
+        "context_recall": 13.14,
+        "hallucination": 25.67
+      }
+    },
+    {
+      "id": "force-click",
+      "question": "How can I click an element while skipping the non-essential actionability checks?",
+      "reference": "Pass force=True to locator.click; it disables the non-essential checks, for example whether the element receives pointer events.",
+      "sources": [
+        "actionability",
+        "input"
+      ],
+      "answer": "To click an element while skipping non-essential actionability checks, you can use the `force=True` option in the `click` method:\n\n```python\npage.get_by_role(\"button\").click(force=True)\n```",
+      "contexts": [
+        "Some actions like `locator.click` support `force` option that disables non-essential actionability checks,\nfor example passing truthy `force` to `locator.click` method will not check that the target element actually\nreceives click events.",
+        "Sometimes, apps use non-trivial logic where hovering the element overlays it with another element that intercepts the click. This behavior is indistinguishable from a bug where element gets covered and the click is dispatched elsewhere. If you know this is taking place, you can bypass the actionability checks and force the click:\n\n```python\npage.get_by_role(\"button\").click(force=True)\n```",
+        "Performs a simple human click.\n\n```python\n# Generic click\npage.get_by_role(\"button\").click()\n\n# Double click\npage.get_by_text(\"Item\").dblclick()\n\n# Right click\npage.get_by_text(\"Item\").click(button=\"right\")\n\n# Shift + click\npage.get_by_text(\"Item\").click(modifiers=[\"Shift\"])\n\n# Hover over element\npage.get_by_text(\"Item\").hover()\n\n# Click the top left corner\npage.get_by_text(\"Item\").click(position={ \"x\": 0, \"y\": 0})\n```\n\nUnder the hood, this and other pointer-related methods:\n\n- wait for element with given selector to be in DOM\n- wait for it to become displayed, i.e. not empty, no `display:none`, no `visibility:hidden`\n- wait for it to stop moving, for example, until css transition finishes\n- scroll the element into view\n- wait for it to receive pointer events at the action point, for example, waits until element becomes non-obscured by other elements\n- retry if the element is detached during any of the above checks",
+        "Playwright performs a range of actionability checks on the elements before making actions to ensure these actions\nbehave as expected. It auto-waits for all the relevant checks to pass and only then performs the requested action. If the required checks do not pass within the given `timeout`, action fails with the `TimeoutError`.\n\nFor example, for `locator.click`, Playwright will ensure that:\n- locator resolves to exactly one element\n- element is [Visible]\n- element is [Stable], as in not animating or completed animation\n- element [Receives Events], as in not obscured by other elements\n- element is [Enabled]\n- element is [Not Inert]\n\nHere is the complete list of actionability checks performed for each action:"
+      ],
+      "retrieved_sources": [
+        "actionability",
+        "input",
+        "input",
+        "actionability"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.9638,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "hallucination": 0.5
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "actionability#2",
+          "source": "actionability",
+          "score": 0.7483
+        },
+        {
+          "id": "input#5",
+          "source": "input",
+          "score": 0.7103
+        },
+        {
+          "id": "input#4",
+          "source": "input",
+          "score": 0.7015
+        },
+        {
+          "id": "actionability#0",
+          "source": "actionability",
+          "score": 0.6849
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.046,
+        "generation": 10.661,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 46.57,
+        "answer_relevancy": 4.48,
+        "context_precision": 31.46,
+        "context_recall": 15.6,
+        "hallucination": 25.31
+      }
+    },
+    {
+      "id": "upload-files",
+      "question": "How do I upload a file through a file input?",
+      "reference": "Call locator.set_input_files on the input element with type \"file\", for example page.get_by_label(\"Upload file\").set_input_files(\"myfile.pdf\"); pass a list for several files or an empty list to clear.",
+      "sources": [
+        "input"
+      ],
+      "answer": "To upload a file through a file input, use the `set_input_files` method on the locator pointing to the file input element. You can pass a single file path, multiple file paths in an array, or even a directory.\n\n```python\npage.get_by_label(\"Upload file\").set_input_files('myfile.pdf')\n```",
+      "contexts": [
+        "You can select input files for upload using the `locator.set_input_files` method. It expects first argument to point to an [input element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input) with the type `\"file\"`. Multiple files can be passed in the array. If some of the file paths are relative, they are resolved relative to the current working directory. Empty array clears the selected files.\n\n```python\n# Select one file\npage.get_by_label(\"Upload file\").set_input_files('myfile.pdf')\n\n# Select multiple files\npage.get_by_label(\"Upload files\").set_input_files(['file1.txt', 'file2.txt'])\n\n# Select a directory\npage.get_by_label(\"Upload directory\").set_input_files('mydir')\n\n# Remove all the selected files\npage.get_by_label(\"Upload file\").set_input_files([])\n\n# Upload buffer from memory\npage.get_by_label(\"Upload file\").set_input_files(\n    files=[\n        {\"name\": \"test.txt\", \"mimeType\": \"text/plain\", \"buffer\": b\"this is a test\"}\n    ],\n)\n```\n\nIf you don't have input element in hand (it is created dynamically), you can handle the `file_chooser` event\nor use a corresponding waiting method upon your action:",
+        "```python\nwith page.expect_file_chooser() as fc_info:\n    page.get_by_label(\"Upload file\").click()\nfile_chooser = fc_info.value\nfile_chooser.set_files(\"myfile.pdf\")\n```",
+        "If you have no idea what initiates the download, you can still handle the event:\n\n```python\npage.on(\"download\", lambda download: print(download.path()))\n```\n\nNote that handling the event forks the control flow and makes the script harder to follow. Your scenario might end while you are downloading a file since your main control flow is not awaiting for this operation to resolve.\n\n:::note\nFor uploading files, see the uploading files section.\n:::",
+        "Using `locator.fill` is the easiest way to fill out the form fields. It focuses the element and triggers an `input` event with the entered text. It works for `<input>`, `<textarea>` and `[contenteditable]` elements.\n\n```python\n# Text input\npage.get_by_role(\"textbox\").fill(\"Peter\")\n\n# Date input\npage.get_by_label(\"Birth date\").fill(\"2020-02-02\")\n\n# Time input\npage.get_by_label(\"Appointment time\").fill(\"13:15\")\n\n# Local datetime input\npage.get_by_label(\"Local time\").fill(\"2020-03-02T05:15\")\n```"
+      ],
+      "retrieved_sources": [
+        "input",
+        "input",
+        "downloads",
+        "input"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.928,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "hallucination": 0.5
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "input#10",
+          "source": "input",
+          "score": 0.835
+        },
+        {
+          "id": "input#11",
+          "source": "input",
+          "score": 0.7688
+        },
+        {
+          "id": "downloads#1",
+          "source": "downloads",
+          "score": 0.6454
+        },
+        {
+          "id": "input#1",
+          "source": "input",
+          "score": 0.6341
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.046,
+        "generation": 13.693,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 55.42,
+        "answer_relevancy": 4.78,
+        "context_precision": 33.21,
+        "context_recall": 22.62,
+        "hallucination": 26.36
+      }
+    },
+    {
+      "id": "drag-and-drop",
+      "question": "How do I drag one element and drop it on another?",
+      "reference": "Use locator.drag_to, for example page.locator(\"#item-to-be-dragged\").drag_to(page.locator(\"#item-to-drop-at\")); it hovers, presses the mouse, moves to the target and releases.",
+      "sources": [
+        "input"
+      ],
+      "answer": "To drag one element and drop it on another, use the `locator.drag_to` method:\n\n```python\npage.locator(\"#item-to-be-dragged\").drag_to(page.locator(\"#item-to-drop-at\"))\n```",
+      "contexts": [
+        "You can perform drag&drop operation with `locator.drag_to`. This method will:\n- Hover the element that will be dragged.\n- Press left mouse button.\n- Move mouse to the element that will receive the drop.\n- Release left mouse button.\n\n```python\npage.locator(\"#item-to-be-dragged\").drag_to(page.locator(\"#item-to-drop-at\"))\n```",
+        "If you want precise control over the drag operation, use lower-level methods like `locator.hover`, `mouse.down`, `mouse.move` and `mouse.up`.\n\n```python\npage.locator(\"#item-to-be-dragged\").hover()\npage.mouse.down()\npage.locator(\"#item-to-drop-at\").hover()\npage.mouse.up()\n```\n\n:::note\nIf your page relies on the `dragover` event being dispatched, you need at least two mouse moves to trigger it in all browsers. To reliably issue the second mouse move, repeat your `mouse.move` or `locator.hover` twice. The sequence of operations would be: hover the drag element, mouse down, hover the drop element, hover the drop element second time, mouse up.\n:::",
+        "Performs a simple human click.\n\n```python\n# Generic click\npage.get_by_role(\"button\").click()\n\n# Double click\npage.get_by_text(\"Item\").dblclick()\n\n# Right click\npage.get_by_text(\"Item\").click(button=\"right\")\n\n# Shift + click\npage.get_by_text(\"Item\").click(modifiers=[\"Shift\"])\n\n# Hover over element\npage.get_by_text(\"Item\").hover()\n\n# Click the top left corner\npage.get_by_text(\"Item\").click(position={ \"x\": 0, \"y\": 0})\n```\n\nUnder the hood, this and other pointer-related methods:\n\n- wait for element with given selector to be in DOM\n- wait for it to become displayed, i.e. not empty, no `display:none`, no `visibility:hidden`\n- wait for it to stop moving, for example, until css transition finishes\n- scroll the element into view\n- wait for it to receive pointer events at the action point, for example, waits until element becomes non-obscured by other elements\n- retry if the element is detached during any of the above checks",
+        "Sometimes, apps use non-trivial logic where hovering the element overlays it with another element that intercepts the click. This behavior is indistinguishable from a bug where element gets covered and the click is dispatched elsewhere. If you know this is taking place, you can bypass the actionability checks and force the click:\n\n```python\npage.get_by_role(\"button\").click(force=True)\n```"
+      ],
+      "retrieved_sources": [
+        "input",
+        "input",
+        "input",
+        "input"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.8592,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "hallucination": 0.25
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "input#13",
+          "source": "input",
+          "score": 0.7995
+        },
+        {
+          "id": "input#14",
+          "source": "input",
+          "score": 0.7858
+        },
+        {
+          "id": "input#4",
+          "source": "input",
+          "score": 0.6595
+        },
+        {
+          "id": "input#5",
+          "source": "input",
+          "score": 0.6469
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.044,
+        "generation": 11.335,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 42.3,
+        "answer_relevancy": 4.05,
+        "context_precision": 30.39,
+        "context_recall": 21.62,
+        "hallucination": 24.93
+      }
+    },
+    {
+      "id": "select-option",
+      "question": "How do I choose an option in a select element?",
+      "reference": "Use locator.select_option, by value (select_option(\"blue\")), by label (select_option(label=\"Blue\")) or with a list for multiple options.",
+      "sources": [
+        "input"
+      ],
+      "answer": "To select an option in a `<select>` element, use the `select_option` method. You can specify the option by its value or label. Here's an example:\n\n```python\npage.get_by_label('Choose a color').select_option('blue')\n```",
+      "contexts": [
+        "Selects one or multiple options in the `<select>` element with `locator.select_option`.\nYou can specify option `value`, or `label` to select. Multiple options can be selected.\n\n```python\n# Single selection matching the value or label\npage.get_by_label('Choose a color').select_option('blue')\n\n# Single selection matching the label\npage.get_by_label('Choose a color').select_option(label='Blue')\n\n# Multiple selected items\npage.get_by_label('Choose multiple colors').select_option(['red', 'green', 'blue'])\n```",
+        "Generates selector for the given element. For example, select an element in the Elements panel and pass `$0`:\n\n```bash\nplaywright.selector($0)\n\n\"div[id=\"glow-ingress-block\"] >> text=/.*Hello.*/\"\n```",
+        "Performs a simple human click.\n\n```python\n# Generic click\npage.get_by_role(\"button\").click()\n\n# Double click\npage.get_by_text(\"Item\").dblclick()\n\n# Right click\npage.get_by_text(\"Item\").click(button=\"right\")\n\n# Shift + click\npage.get_by_text(\"Item\").click(modifiers=[\"Shift\"])\n\n# Hover over element\npage.get_by_text(\"Item\").hover()\n\n# Click the top left corner\npage.get_by_text(\"Item\").click(position={ \"x\": 0, \"y\": 0})\n```\n\nUnder the hood, this and other pointer-related methods:\n\n- wait for element with given selector to be in DOM\n- wait for it to become displayed, i.e. not empty, no `display:none`, no `visibility:hidden`\n- wait for it to stop moving, for example, until css transition finishes\n- scroll the element into view\n- wait for it to receive pointer events at the action point, for example, waits until element becomes non-obscured by other elements\n- retry if the element is detached during any of the above checks",
+        "Element is considered enabled when it is **not disabled**.\n\nElement is **disabled** when:\n- it is a `<button>`, `<select>`, `<input>`, `<textarea>`, `<option>` or `<optgroup>` with a `[disabled]` attribute;\n- it is a `<button>`, `<select>`, `<input>`, `<textarea>`, `<option>` or `<optgroup>` that is a part of a `<fieldset>` with a `[disabled]` attribute;\n- it is a descendant of an element with `[aria-disabled=true]` attribute."
+      ],
+      "retrieved_sources": [
+        "input",
+        "debug",
+        "input",
+        "actionability"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.7909,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "hallucination": 0.25
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "input#3",
+          "source": "input",
+          "score": 0.8198
+        },
+        {
+          "id": "debug#14",
+          "source": "debug",
+          "score": 0.7279
+        },
+        {
+          "id": "input#4",
+          "source": "input",
+          "score": 0.6913
+        },
+        {
+          "id": "actionability#8",
+          "source": "actionability",
+          "score": 0.676
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.043,
+        "generation": 10.677,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 37.5,
+        "answer_relevancy": 4.14,
+        "context_precision": 29.13,
+        "context_recall": 14.55,
+        "hallucination": 24.88
+      }
+    },
+    {
+      "id": "type-like-user",
+      "question": "How do I type text character by character as if a user were using a real keyboard?",
+      "reference": "Use locator.press_sequentially, for example page.locator(\"#area\").press_sequentially(\"Hello World!\"); in most cases locator.fill is enough.",
+      "sources": [
+        "input"
+      ],
+      "answer": "To type text character by character as if a user were using a real keyboard, use the `locator.press_sequentially` method. This method simulates key presses one by one, emitting all necessary keyboard events. You can also specify a delay between key presses to mimic real user behavior.\n\n```python\npage.locator('#area').press_sequentially('Hello World!')\n```",
+      "contexts": [
+        ":::caution\nMost of the time, you should input text with `locator.fill`. See the Text input section above. You only need to type characters if there is special keyboard handling on the page.\n:::\n\nType into the field character by character, as if it was a user with a real keyboard with `locator.press_sequentially`.\n\n```python\n# Press keys one by one\npage.locator('#area').press_sequentially('Hello World!')\n```\n\nThis method will emit all the necessary keyboard events, with all the `keydown`, `keyup`, `keypress` events in place. You can even specify the optional `delay` between the key presses to simulate real user behavior.",
+        "```python\n# Hit Enter\npage.get_by_text(\"Submit\").press(\"Enter\")\n\n# Dispatch Control+Right\npage.get_by_role(\"textbox\").press(\"Control+ArrowRight\")\n\n# Press $ sign on keyboard\npage.get_by_role(\"textbox\").press(\"$\")\n```\n\nThe `locator.press` method focuses the selected element and produces a single keystroke. It accepts the logical key names that are emitted in the [keyboardEvent.key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) property of the keyboard events:\n\n```txt\nBackquote, Minus, Equal, Backslash, Backspace, Tab, Delete, Escape,\nArrowDown, End, Enter, Home, Insert, PageDown, PageUp, ArrowRight,\nArrowUp, F1 - F12, Digit0 - Digit9, KeyA - KeyZ, etc.\n```\n\n- You can alternatively specify a single character you'd like to produce such as `\"a\"` or `\"#\"`.\n\n- Following modification shortcuts are also supported: `Shift, Control, Alt, Meta`.\n\nSimple version produces a single character. This character is case-sensitive, so `\"a\"` and `\"A\"` will produce different results.\n\n```python\n# <input id=name>\npage.locator('#name').press('Shift+A')\n\n# <input id=name>\npage.locator('#name').press('Shift+ArrowLeft')\n```",
+        "With Playwright you can test your app on any browser as well as emulate a real device such as a mobile phone or tablet. Simply configure the devices you would like to emulate and Playwright will simulate the browser behavior such as `\"userAgent\"`, `\"screenSize\"`, `\"viewport\"` and if it `\"hasTouch\"` enabled. You can also emulate the `\"geolocation\"`, `\"locale\"` and `\"timezone\"` for all tests or for a specific test as well as set the `\"permissions\"` to show notifications or change the `\"colorScheme\"`.",
+        "The Playwright API can automate interaction with a login form.\n\nThe following example logs into GitHub. Once these steps are executed,\nthe browser context will be authenticated.\n\n```python\npage = context.new_page()\npage.goto('https://github.com/login')\n\n# Interact with login form\npage.get_by_label(\"Username or email address\").fill(\"username\")\npage.get_by_label(\"Password\").fill(\"password\")\npage.get_by_role(\"button\", name=\"Sign in\").click()\n# Continue with the test\n```\n\nRedoing login for every test can slow down test execution. To mitigate that, reuse\nexisting authentication state instead."
+      ],
+      "retrieved_sources": [
+        "input",
+        "input",
+        "emulation",
+        "auth"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.9679,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "hallucination": 0.0
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "input#7",
+          "source": "input",
+          "score": 0.7672
+        },
+        {
+          "id": "input#8",
+          "source": "input",
+          "score": 0.6726
+        },
+        {
+          "id": "emulation#0",
+          "source": "emulation",
+          "score": 0.6656
+        },
+        {
+          "id": "auth#2",
+          "source": "auth",
+          "score": 0.6508
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.046,
+        "generation": 14.173,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 46.56,
+        "answer_relevancy": 5.32,
+        "context_precision": 35.87,
+        "context_recall": 18.88,
+        "hallucination": 25.26
+      }
+    },
+    {
+      "id": "assertion-timeout",
+      "question": "What is the default timeout of expect assertions and how do I change it?",
+      "reference": "The default is 5 seconds. Change it globally with expect.set_options(timeout=10_000) or per assertion with the timeout argument.",
+      "sources": [
+        "test-assertions-csharp-java-python"
+      ],
+      "answer": "The default timeout for expect assertions is 5 seconds. You can change it globally using `expect.set_options(timeout=...)` or set it per assertion by passing the `timeout` parameter to the assertion method. \n\n```python\nexpect(page.get_by_text(\"Name\")).to_be_visible(timeout=10_000)\n```",
+      "contexts": [
+        "You can specify a custom timeout for assertions either globally or per assertion. The default timeout is 5 seconds.",
+        "```python\nfrom playwright.sync_api import expect\n\ndef test_foobar(page: Page) -> None:\n    expect(page.get_by_text(\"Name\")).to_be_visible(timeout=10_000)\n```",
+        "```python\nfrom playwright.sync_api import expect\n\nexpect.set_options(timeout=10_000)\n```",
+        "You can specify a custom expect message as a second argument to the `expect` function, for example:\n\n```python\nexpect(page.get_by_text(\"Name\"), \"should be logged in\").to_be_visible()\n```\n\nWhen expect fails, the error would look like this:\n\n```bash\n    def test_foobar(page: Page) -> None:\n>       expect(page.get_by_text(\"Name\"), \"should be logged in\").to_be_visible()\nE       AssertionError: should be logged in\nE       Actual value: None\nE       Call log:\nE       LocatorAssertions.to_be_visible with timeout 5000ms\nE       waiting for get_by_text(\"Name\")\nE       waiting for get_by_text(\"Name\")\n\ntests/test_foobar.py:22: AssertionError\n```\n\n```bash\nMicrosoft.Playwright.PlaywrightAssertionException : should be logged in\n\nLocator expected to be visible\nCall log:\n- Expect \"ToBeVisibleAsync\" with timeout 5000ms\n- waiting for GetByText(\"Name\")\n```"
+      ],
+      "retrieved_sources": [
+        "test-assertions-csharp-java-python",
+        "test-assertions-csharp-java-python",
+        "test-assertions-csharp-java-python",
+        "test-assertions-csharp-java-python"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.9844,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "hallucination": 0.75
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "test-assertions-csharp-java-python#6",
+          "source": "test-assertions-csharp-java-python",
+          "score": 0.8297
+        },
+        {
+          "id": "test-assertions-csharp-java-python#8",
+          "source": "test-assertions-csharp-java-python",
+          "score": 0.8103
+        },
+        {
+          "id": "test-assertions-csharp-java-python#7",
+          "source": "test-assertions-csharp-java-python",
+          "score": 0.8097
+        },
+        {
+          "id": "test-assertions-csharp-java-python#5",
+          "source": "test-assertions-csharp-java-python",
+          "score": 0.779
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.047,
+        "generation": 10.313,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 35.74,
+        "answer_relevancy": 4.13,
+        "context_precision": 31.39,
+        "context_recall": 15.5,
+        "hallucination": 21.63
+      }
+    },
+    {
+      "id": "soft-assertions",
+      "question": "What are soft assertions in Playwright for Python?",
+      "reference": "Assertions made with expect.soft do not stop the test when they fail; the test continues and is marked as failed at the end.",
+      "sources": [
+        "test-assertions-csharp-java-python"
+      ],
+      "answer": "Soft assertions in Playwright for Python are assertions that do not terminate the test execution if they fail. Instead, they mark the test as failed but allow the test to continue running and checking other conditions. This is useful for collecting multiple failure points in a single test run. Soft assertions require the `pytest-playwright` plugin (version 0.8.0 or newer) to function correctly.",
+      "contexts": [
+        "By default, failed assertion will terminate test execution. Playwright also\nsupports *soft assertions*: failed soft assertions **do not** terminate test\nexecution, but mark the test as failed.\n\n```python\n# Make a few checks that will not stop the test when failed...\nexpect.soft(page.get_by_test_id(\"status\")).to_have_text(\"Success\")\nexpect.soft(page.get_by_test_id(\"eta\")).to_have_text(\"1 day\")\n\n# ... and continue the test to check more things.\npage.get_by_role(\"link\", name=\"next page\").click()\nexpect.soft(page.get_by_role(\"heading\", name=\"Make another order\")).to_be_visible()\n```\n\nNote that soft assertions only work with the\n[`pytest-playwright`](https://pypi.org/project/pytest-playwright/) (or\n[`pytest-playwright-asyncio`](https://pypi.org/project/pytest-playwright-asyncio/))\nplugin, version `0.8.0` or newer.",
+        "Playwright includes web-specific assertions that automatically retry until the expected condition is met.  Consider the following example:\n\n```python\nexpect(page.get_by_test_id(\"status\")).to_have_text(\"Submitted\")\n```\n\nPlaywright will re-test the element with the test ID of `status` until it has the `\"Submitted\"` text.  It will re-fetch the element and check it repeatedly until the condition is met or the timeout is reached.\n\nBy default, the timeout for assertions is 5 seconds.",
+        "Playwright includes assertions that will wait until the expected condition is met. Using these assertions allows making the tests non-flaky and resilient. For example, this code will wait until the page gets the title containing \"Playwright\":\n\n```python\nimport re\nfrom playwright.sync_api import expect\n\nexpect(page).to_have_title(re.compile(\"Playwright\"))\n```\n\nHere is the list of the most popular async assertions. Note that there are many more to get familiar with:\n\n| Assertion | Description |\n| :- | :- |\n| `locator_assertions.to_be_checked` | Checkbox is checked |\n| `locator_assertions.to_be_enabled` | Control is enabled |\n| `locator_assertions.to_be_visible` | Element is visible |\n| `locator_assertions.to_contain_text` | Element contains text |\n| `locator_assertions.to_have_attribute` | Element has attribute |\n| `locator_assertions.to_have_count` | List of elements has given length |\n| `locator_assertions.to_have_text` | Element matches text |\n| `locator_assertions.to_have_value` | Input element has value |\n| `page_assertions.to_have_title` | Page has title |\n| `page_assertions.to_have_u_r_l` | Page has URL |",
+        "Playwright tests are simple, they\n\n- **perform actions**, and\n- **assert the state** against expectations.\n\nThere is no need to wait for anything prior to performing an action: Playwright\nautomatically waits for the wide range of actionability\nchecks to pass prior to performing each action.\n\nThere is also no need to deal with the race conditions when performing the checks -\nPlaywright assertions are designed in a way that they describe the expectations\nthat need to be eventually met.\n\nThat's it! These design choices allow Playwright users to forget about flaky\ntimeouts and racy checks in their tests altogether.\n\n**You will learn**\n\n- How to write the first test\n- How to perform actions\n- How to use assertions\n- How tests run in isolation\n- How to use test hooks"
+      ],
+      "retrieved_sources": [
+        "test-assertions-csharp-java-python",
+        "test-assertions-csharp-java-python",
+        "writing-tests-python",
+        "writing-tests-python"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 1.0,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "hallucination": 1.0
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "test-assertions-csharp-java-python#4",
+          "source": "test-assertions-csharp-java-python",
+          "score": 0.8413
+        },
+        {
+          "id": "test-assertions-csharp-java-python#0",
+          "source": "test-assertions-csharp-java-python",
+          "score": 0.7609
+        },
+        {
+          "id": "writing-tests-python#5",
+          "source": "writing-tests-python",
+          "score": 0.7371
+        },
+        {
+          "id": "writing-tests-python#0",
+          "source": "writing-tests-python",
+          "score": 0.7046
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.044,
+        "generation": 15.415,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 43.93,
+        "answer_relevancy": 3.76,
+        "context_precision": 31.22,
+        "context_recall": 16.42,
+        "hallucination": 25.93
+      }
+    },
+    {
+      "id": "base-url",
+      "question": "How do I configure a base URL so tests can call page.goto with relative paths?",
+      "reference": "Start pytest with the --base-url argument (provided by the pytest-base-url plugin), for example pytest --base-url http://localhost:8080, then page.goto(\"/admin\") resolves against it.",
+      "sources": [
+        "test-runners-python"
+      ],
+      "answer": "To configure a base URL so tests can call `page.goto` with relative paths, use the `base-url` argument when running Pytest. This allows you to set the base URL from the config, CLI, or as a fixture.\n\n```bash\npytest --base-url http://localhost:8080\n```\n\nThen, in your test, you can use relative paths like `/admin`, which will be resolved to the base URL.",
+      "contexts": [
+        "Most of the tests will start with navigating page to the URL. After that, test\nwill be able to interact with the page elements.\n\n```python\npage.goto(\"https://playwright.dev/\")\n```\n\nPlaywright will wait for page to reach the load state prior to moving forward.\nLearn more about the `page.goto` options.",
+        "Simplest form of a navigation is opening a URL:\n\n```python\n# Navigate the page\npage.goto(\"https://example.com\")\n```\n\nThe code above loads the page and waits for the web page to fire the\n[load](https://developer.mozilla.org/en-US/docs/Web/API/Window/load_event) event.\nThe load event is fired when the whole page has loaded, including all dependent\nresources such as stylesheets, scripts, iframes, and images.\n\n:::note\nIf the page does a client-side redirect before `load`, `page.goto` will\nwait for the redirected page to fire the `load` event.\n:::\n\n:::note\nIn Firefox, a navigation triggered by the page can interrupt `page.goto`\nwith an `NS_BINDING_ABORTED` error. This is a\n[known Firefox limitation](https://github.com/microsoft/playwright/issues/20749).\n:::",
+        "Start Pytest with the `base-url` argument. The [`pytest-base-url`](https://github.com/pytest-dev/pytest-base-url) plugin is used\nfor that which allows you to set the base url from the config, CLI arg or as a fixture.\n\n```bash\npytest --base-url http://localhost:8080\n```\n\n```py\ndef test_visit_example(page):\n    page.goto(\"/admin\")\n    # -> Will result in http://localhost:8080/admin\n```",
+        "Set up route on the entire browser context with `browser_context.route` or page with `page.route`. It will apply to popup windows and opened links.\n\n```python\ncontext.route(\n    \"**/api/login\",\n    lambda route: route.fulfill(status=200, body=\"accept\"))\npage.goto(\"https://example.com\")\n```"
+      ],
+      "retrieved_sources": [
+        "writing-tests-python",
+        "navigations",
+        "test-runners-python",
+        "network"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 0.3333,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.9396,
+        "context_precision": 0.3333,
+        "context_recall": 1.0,
+        "hallucination": 0.25
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "writing-tests-python#2",
+          "source": "writing-tests-python",
+          "score": 0.7404
+        },
+        {
+          "id": "navigations#1",
+          "source": "navigations",
+          "score": 0.7238
+        },
+        {
+          "id": "test-runners-python#12",
+          "source": "test-runners-python",
+          "score": 0.7219
+        },
+        {
+          "id": "network#7",
+          "source": "network",
+          "score": 0.6782
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.049,
+        "generation": 12.933,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 49.25,
+        "answer_relevancy": 4.76,
+        "context_precision": 31.33,
+        "context_recall": 16.37,
+        "hallucination": 24.62
+      }
+    },
+    {
+      "id": "parallel-tests",
+      "question": "How do I run my Playwright pytest tests in parallel?",
+      "reference": "Install pytest-xdist and run pytest with --numprocesses followed by the number of processes, for example pytest --numprocesses 2; about half of the logical CPU cores is recommended.",
+      "sources": [
+        "running-tests-python",
+        "test-runners-python"
+      ],
+      "answer": "To run your Playwright pytest tests in parallel, use the `pytest-xdist` plugin. Install it with `pip install pytest-xdist` and then run your tests using `pytest --numprocesses auto`. This allows multiple tests to execute simultaneously, improving overall test suite performance.",
+      "contexts": [
+        "Playwright was created specifically to accommodate the needs of end-to-end testing. Playwright supports all modern rendering engines including Chromium, WebKit, and Firefox. Test on Windows, Linux, and macOS, locally or on CI, headless or headed with native mobile emulation.\n\nThe Playwright library can be used as a general purpose browser automation tool, providing a powerful set of APIs to automate web applications, for both sync and async Python.\n\nThis introduction describes the Playwright Pytest plugin, which is the recommended way to write end-to-end tests.\n\n**You will learn**\n\n- How to install Playwright Pytest\n- How to run the example test",
+        "Playwright recommends using the official Playwright Pytest plugin to write end-to-end tests. It provides context isolation, running it on multiple browser configurations out of the box.\n\nGet started by installing Playwright and running the example test to see it in action.\n\nInstall the [Pytest plugin](https://pypi.org/project/pytest-playwright/):\n\n<Tabs\n  groupId=\"package-managers\"\n  defaultValue=\"pip\"\n  values={[\n    {label: 'Pip', value: 'pip'},\n    {label: 'Poetry', value: 'poetry'},\n    {label: 'uv', value: 'uv'}\n  ]\n}>\n\n<TabItem value=\"pip\">\n\n```bash\npip install pytest-playwright\n```\n\n</TabItem>\n\n<TabItem value=\"poetry\">\n\n```bash\npoetry add pytest-playwright\n```\n\n</TabItem>\n\n<TabItem value=\"uv\">\n\n```bash\nuv add pytest-playwright\n```\n\n</TabItem>\n\n</Tabs>\n\nInstall the required browsers:\n\n```bash\nplaywright install\n```",
+        "If your tests are running on a machine with a lot of CPUs, you can speed up the overall execution time of your test suite by using [`pytest-xdist`](https://pypi.org/project/pytest-xdist/) to run multiple tests at once:\n\n```bash\n# install dependency\npip install pytest-xdist\n# use the --numprocesses flag\npytest --numprocesses auto\n```\n\nDepending on the hardware and nature of your tests, you can set `numprocesses` to be anywhere from `2` to the number of CPUs on the machine. If set too high, you may notice unexpected behavior.\n\nSee Running Tests for general information on `pytest` options.",
+        "The Playwright Pytest plugin is based on the concept of test fixtures such as the built in page fixture, which is passed into your test. Pages are isolated between tests due to the Browser Context, which is equivalent to a brand new browser profile, where every test gets a fresh environment, even when multiple tests run in a single Browser.\n\n```python\nfrom playwright.sync_api import Page\n\ndef test_example_test(page: Page):\n  pass\n  # \"page\" belongs to an isolated BrowserContext, created for this specific test.\n\ndef test_another_test(page: Page):\n  pass\n  # \"page\" in this second test is completely isolated from the first test.\n```"
+      ],
+      "retrieved_sources": [
+        "intro-python",
+        "intro-python",
+        "test-runners-python",
+        "writing-tests-python"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 0.3333,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.992,
+        "context_precision": 0.3333,
+        "context_recall": 1.0,
+        "hallucination": 0.25
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "intro-python#0",
+          "source": "intro-python",
+          "score": 0.7944
+        },
+        {
+          "id": "intro-python#1",
+          "source": "intro-python",
+          "score": 0.7868
+        },
+        {
+          "id": "test-runners-python#6",
+          "source": "test-runners-python",
+          "score": 0.7749
+        },
+        {
+          "id": "writing-tests-python#6",
+          "source": "writing-tests-python",
+          "score": 0.7729
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.048,
+        "generation": 12.394,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 46.62,
+        "answer_relevancy": 3.74,
+        "context_precision": 32.37,
+        "context_recall": 18.12,
+        "hallucination": 28.44
+      }
+    },
+    {
+      "id": "record-trace",
+      "question": "How do I record a trace and open it in the Trace Viewer?",
+      "reference": "Start tracing with context.tracing.start(screenshots=True, snapshots=True, sources=True), stop with context.tracing.stop(path=\"trace.zip\"), and open it with playwright show-trace trace.zip; with pytest you can also use --tracing on.",
+      "sources": [
+        "trace-viewer-intro-java-python",
+        "test-runners-python"
+      ],
+      "answer": "To record a trace, run your tests with the `--tracing on` flag if using Pytest. Otherwise, use `context.tracing.start()` and `context.tracing.stop(path=\"trace.zip\")` in your Python code. To open the trace in the Trace Viewer, use the Playwright CLI command `playwright show-trace trace.zip` or upload the trace file to [trace.playwright.dev](https://trace.playwright.dev).",
+      "contexts": [
+        "You can open the saved trace using the Playwright CLI or in your browser on [`trace.playwright.dev`](https://trace.playwright.dev). Make sure to add the full path to where your trace's zip file is located. Once opened you can click on each action or use the timeline to see the state of the page before and after each action. You can also inspect the log, source and network during each step of the test. The trace viewer creates a DOM snapshot so you can fully interact with it, open devtools etc.\n\n```bash\nmvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args=\"show-trace trace.zip\"\n```\n\n```bash\nplaywright show-trace trace.zip\n```\n\n######\n\n<img src=\"https://github.com/microsoft/playwright/assets/13063165/10fe3585-8401-4051-b1c2-b2e92ac4c274\" alt=\"playwright trace viewer\" width=\"3598\" height=\"2218\" />\n\nTo learn more check out our detailed guide on Trace Viewer.",
+        "Traces can be recorded by running your tests with the `--tracing` flag.\n\n```bash\npytest --tracing on\n```\n\nOptions for tracing are:\n- `on`: Record trace for each test\n- `off`: Do not record trace. (default)\n- `retain-on-failure`: Record trace for each test, but remove all traces from successful test runs.\n\nThis will record the trace and place it into the file named `trace.zip` in your `test-results` directory.\n\n<details>\n<summary>If you are not using Pytest, click here to learn how to record traces.</summary>\n\n```python\nbrowser = chromium.launch()\ncontext = browser.new_context()\n\n# Start tracing before creating / navigating a page.\ncontext.tracing.start(screenshots=True, snapshots=True, sources=True)\n\npage = context.new_page()\npage.goto(\"https://playwright.dev\")\n\n# Stop tracing and export it into a zip archive.\ncontext.tracing.stop(path = \"trace.zip\")\n```\n\n</details>",
+        "Playwright Trace Viewer is a GUI tool that lets you explore recorded Playwright traces of your tests meaning you can go back and forward though each action of your test and visually see what was happening during each action.\n\n**You will learn**\n\n- How to record a trace\n- How to open the trace viewer",
+        "Playwright Trace Viewer is a GUI tool that lets you explore recorded Playwright traces of your tests. You can go back and forward through each action on the left side, and visually see what was happening during the action. In the middle of the screen, you can see a DOM snapshot for the action. On the right side you can see action details, such as time, parameters, return value and log. You can also explore console messages, network requests and the source code.\n\n<video width=\"100%\" height=\"100%\" controls muted>\n  <source src=\"https://user-images.githubusercontent.com/13063165/219132713-17b9d75b-71e3-42c4-a43f-3f9e2e15f834.mp4\" type=\"video/mp4\" />\n</video>\n\nTo learn more about how to record traces and use the Trace Viewer, check out the Trace Viewer guide."
+      ],
+      "retrieved_sources": [
+        "trace-viewer-intro-java-python",
+        "trace-viewer-intro-java-python",
+        "trace-viewer-intro-java-python",
+        "debug"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 0.75,
+        "answer_relevancy": 0.6987,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "hallucination": 1.0
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "trace-viewer-intro-java-python#2",
+          "source": "trace-viewer-intro-java-python",
+          "score": 0.8107
+        },
+        {
+          "id": "trace-viewer-intro-java-python#1",
+          "source": "trace-viewer-intro-java-python",
+          "score": 0.7796
+        },
+        {
+          "id": "trace-viewer-intro-java-python#0",
+          "source": "trace-viewer-intro-java-python",
+          "score": 0.7658
+        },
+        {
+          "id": "debug#7",
+          "source": "debug",
+          "score": 0.7458
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.047,
+        "generation": 16.313,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 47.08,
+        "answer_relevancy": 4.47,
+        "context_precision": 35.97,
+        "context_recall": 26.88,
+        "hallucination": 28.2
+      }
+    }
+  ],
+  "summary": {
+    "hit_rate": {
+      "mean": 0.9667,
+      "n": 30,
+      "failed": 0,
+      "lower_is_better": false
+    },
+    "mrr": {
+      "mean": 0.9222,
+      "n": 30,
+      "failed": 0,
+      "lower_is_better": false
+    },
+    "faithfulness": {
+      "mean": 0.9433,
+      "n": 30,
+      "failed": 0,
+      "lower_is_better": false
+    },
+    "answer_relevancy": {
+      "mean": 0.8759,
+      "n": 30,
+      "failed": 0,
+      "lower_is_better": false
+    },
+    "context_precision": {
+      "mean": 0.8926,
+      "n": 30,
+      "failed": 0,
+      "lower_is_better": false
+    },
+    "context_recall": {
+      "mean": 0.9667,
+      "n": 30,
+      "failed": 0,
+      "lower_is_better": false
+    },
+    "hallucination": {
+      "mean": 0.59,
+      "n": 30,
+      "failed": 0,
+      "lower_is_better": false
+    }
+  }
+}
