@@ -1,0 +1,42 @@
+# Excerpt of the local Ollama 0.40.16 server log (llama-server runner, qwen3:8b), 2026-11-12.
+# Degraded eval attempt, question 1. Lines kept: slot/task handling, errors and HTTP status.
+# Task 97 is a structured (format) request that works; tasks 252-263 are structured requests
+# that fail on the first sampled token and are answered HTTP 200 with an empty message.
+
+[GIN] 2026/11/12 - 21:17:11 | 200 |   42.41s |       127.0.0.1 | POST     "/api/chat"
+slot get_availabl: id  0 | task -1 | selected slot by LRU, n_tokens = 311, t_last = 41154580
+    repeat_last_n = 64, repeat_penalty = 1.000, frequency_penalty = 0.000, presence_penalty = 1.500
+slot   operator(): id  0 | task 97 | new prompt, n_ctx_slot = 16384, n_keep = 4, task.n_tokens = 480
+slot   operator(): id  0 | task 97 | cached n_tokens = 1, memory_seq_rm [1, end)
+slot print_timing: id  0 | task 97 | prompt eval time =    3878.77 ms /   479 tokens (    8.10 ms per token,   123.49 tokens per second)
+slot print_timing: id  0 | task 97 |        eval time =   11234.52 ms /   154 tokens (   73.43 ms per token,    13.62 tokens per second)
+slot      release: id  0 | task 97 | stop processing: n_tokens = 633, truncated = 0
+[GIN] 2026/11/12 - 21:17:37 | 200 |   15.17s |       127.0.0.1 | POST     "/api/chat"
+slot get_availabl: id  0 | task -1 | selected slot by LRU, n_tokens = 633, t_last = 67587149
+    repeat_last_n = 64, repeat_penalty = 1.000, frequency_penalty = 0.000, presence_penalty = 1.500
+slot   operator(): id  0 | task 252 | new prompt, n_ctx_slot = 16384, n_keep = 4, task.n_tokens = 895
+slot   operator(): id  0 | task 252 | cached n_tokens = 3, memory_seq_rm [3, end)
+slot   operator(): id  0 | task 252 | cached n_tokens = 515, memory_seq_rm [515, end)
+slot      iterate: id  0 | task 252 | got exception: Unexpected empty grammar stack after accepting piece: 0 (15)
+srv    send_error: task id = 252, error: got exception: Unexpected empty grammar stack after accepting piece: 0 (15)
+slot      release: id  0 | task 252 | stop processing: n_tokens = 895, truncated = 0
+[GIN] 2026/11/12 - 21:17:44 | 200 |    7.17s |       127.0.0.1 | POST     "/api/chat"
+slot get_availabl: id  0 | task -1 | selected slot by LCP similarity, f_sim_best = 1.000 (> 0.100 thold), f_keep = 1.000
+    repeat_last_n = 64, repeat_penalty = 1.000, frequency_penalty = 0.000, presence_penalty = 1.500
+slot   operator(): id  0 | task 256 | new prompt, n_ctx_slot = 16384, n_keep = 4, task.n_tokens = 895
+slot   operator(): id  0 | task 256 | need to evaluate at least 1 token for each active slot (n_past = 895, task.n_tokens() = 895)
+slot   operator(): id  0 | task 256 | n_past was set to 894
+slot   operator(): id  0 | task 256 | cached n_tokens = 894, memory_seq_rm [894, end)
+slot      iterate: id  0 | task 256 | got exception: Unexpected empty grammar stack after accepting piece: 0 (15)
+srv    send_error: task id = 256, error: got exception: Unexpected empty grammar stack after accepting piece: 0 (15)
+slot      release: id  0 | task 256 | stop processing: n_tokens = 895, truncated = 0
+[GIN] 2026/11/12 - 21:17:44 | 200 | 132.03ms |       127.0.0.1 | POST     "/api/chat"
+slot get_availabl: id  0 | task -1 | selected slot by LRU, n_tokens = 895, t_last = 74903251
+    repeat_last_n = 64, repeat_penalty = 1.000, frequency_penalty = 0.000, presence_penalty = 1.500
+slot   operator(): id  0 | task 259 | new prompt, n_ctx_slot = 16384, n_keep = 4, task.n_tokens = 548
+slot   operator(): id  0 | task 259 | cached n_tokens = 3, memory_seq_rm [3, end)
+slot   operator(): id  0 | task 259 | cached n_tokens = 515, memory_seq_rm [515, end)
+slot      iterate: id  0 | task 259 | got exception: Unexpected empty grammar stack after accepting piece: 0 (15)
+srv    send_error: task id = 259, error: got exception: Unexpected empty grammar stack after accepting piece: 0 (15)
+slot      release: id  0 | task 259 | stop processing: n_tokens = 548, truncated = 0
+[GIN] 2026/11/12 - 21:17:49 | 200 |    4.83s |       127.0.0.1 | POST     "/api/chat"
