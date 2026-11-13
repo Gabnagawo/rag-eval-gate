@@ -1,0 +1,71 @@
+# Degraded run (rag.yaml: top_k 1, chunk_size 300, chunk_overlap 50), 2026-11-12/13.
+# Command, repeated until all 30 questions were scored:
+#   uv run rag-gate eval --profile local --out results/degraded.json --resume
+# The host memory guard stopped passes 1 and 3, and pass 2 was stopped by hand when most
+# judge calls failed (see docs/JUDGE-EMPTY-COMPLETIONS.md). --resume keeps only questions
+# with every metric scored, so each question below was scored in the last pass that lists it.
+
+## Pass 1 (questions 1-15, stopped by the memory guard; 7-15 lacked answer_relevancy)
+rag-eval-gate 0.1.0: 30 questions, profile local, generator ollama/qwen3:8b, judge qwen3:8b, top_k 1, chunk_size 300, 563 chunks
+[ 1/30] custom-test-id-attribute   hit_rate=1.00  mrr=1.00  faithfulness=0.29  answer_relevancy=0.87  context_precision=1.00  context_recall=1.00  hallucination=1.00  (160 s)
+[ 2/30] popup-window               hit_rate=1.00  mrr=1.00  faithfulness=0.67  answer_relevancy=0.91  context_precision=1.00  context_recall=1.00  hallucination=1.00  (64 s)
+[ 3/30] new-tab-in-context         hit_rate=1.00  mrr=1.00  faithfulness=0.50  answer_relevancy=0.95  context_precision=1.00  context_recall=1.00  hallucination=1.00  (72 s)
+[ 4/30] dialogs-default            hit_rate=1.00  mrr=1.00  faithfulness=0.75  answer_relevancy=0.97  context_precision=1.00  context_recall=1.00  hallucination=1.00  (67 s)
+[ 5/30] download-save              hit_rate=1.00  mrr=1.00  faithfulness=1.00  answer_relevancy=0.83  context_precision=1.00  context_recall=1.00  hallucination=1.00  (68 s)
+[ 6/30] download-lifetime          hit_rate=1.00  mrr=1.00  faithfulness=0.75  answer_relevancy=0.98  context_precision=1.00  context_recall=1.00  hallucination=1.00  (55 s)
+[ 7/30] full-page-screenshot       hit_rate=1.00  mrr=1.00  faithfulness=1.00  answer_relevancy=ERR  context_precision=1.00  context_recall=1.00  hallucination=1.00  (175 s)
+[ 8/30] screenshot-buffer          hit_rate=1.00  mrr=1.00  faithfulness=1.00  answer_relevancy=ERR  context_precision=1.00  context_recall=1.00  hallucination=1.00  (187 s)
+[ 9/30] geolocation                hit_rate=1.00  mrr=1.00  faithfulness=1.00  answer_relevancy=ERR  context_precision=1.00  context_recall=0.50  hallucination=1.00  (186 s)
+[10/30] dark-mode                  hit_rate=0.00  mrr=0.00  faithfulness=1.00  answer_relevancy=ERR  context_precision=0.00  context_recall=1.00  hallucination=0.00  (152 s)
+[11/30] offline-mode               hit_rate=1.00  mrr=1.00  faithfulness=1.00  answer_relevancy=ERR  context_precision=1.00  context_recall=1.00  hallucination=1.00  (167 s)
+[12/30] locale-timezone            hit_rate=1.00  mrr=1.00  faithfulness=0.12  answer_relevancy=ERR  context_precision=1.00  context_recall=0.00  hallucination=1.00  (222 s)
+[13/30] block-images               hit_rate=1.00  mrr=1.00  faithfulness=1.00  answer_relevancy=ERR  context_precision=1.00  context_recall=1.00  hallucination=1.00  (174 s)
+[14/30] http-auth                  hit_rate=1.00  mrr=1.00  faithfulness=1.00  answer_relevancy=ERR  context_precision=1.00  context_recall=1.00  hallucination=1.00  (209 s)
+[15/30] proxy                      hit_rate=1.00  mrr=1.00  faithfulness=0.17  answer_relevancy=ERR  context_precision=1.00  context_recall=1.00  hallucination=1.00  (211 s)
+
+## Pass 2 (stopped by hand at question 12: judge faults on most calls)
+rag-eval-gate 0.1.0: 30 questions, profile local, generator ollama/qwen3:8b, judge qwen3:8b, top_k 1, chunk_size 300, 563 chunks
+[ 7/30] full-page-screenshot       hit_rate=1.00  mrr=1.00  faithfulness=1.00  answer_relevancy=0.88  context_precision=1.00  context_recall=1.00  hallucination=1.00  (138 s)
+[ 8/30] screenshot-buffer          hit_rate=1.00  mrr=1.00  faithfulness=1.00  answer_relevancy=0.90  context_precision=1.00  context_recall=1.00  hallucination=ERR  (79 s)
+[ 9/30] geolocation                hit_rate=1.00  mrr=1.00  faithfulness=ERR  answer_relevancy=ERR  context_precision=1.00  context_recall=0.50  hallucination=ERR  (66 s)
+[10/30] dark-mode                  hit_rate=0.00  mrr=0.00  faithfulness=1.00  answer_relevancy=ERR  context_precision=0.00  context_recall=1.00  hallucination=ERR  (59 s)
+[11/30] offline-mode               hit_rate=1.00  mrr=1.00  faithfulness=ERR  answer_relevancy=ERR  context_precision=ERR  context_recall=1.00  hallucination=ERR  (107 s)
+[12/30] locale-timezone            hit_rate=1.00  mrr=1.00  faithfulness=ERR  answer_relevancy=0.85  context_precision=1.00  context_recall=0.00  hallucination=1.00  (71 s)
+
+## Pass 3 (runner reload on fault; stopped by the memory guard at question 18)
+rag-eval-gate 0.1.0: 30 questions, profile local, generator ollama/qwen3:8b, judge qwen3:8b, top_k 1, chunk_size 300, 563 chunks
+[ 8/30] screenshot-buffer          hit_rate=1.00  mrr=1.00  faithfulness=ERR  answer_relevancy=0.90  context_precision=1.00  context_recall=1.00  hallucination=1.00  (65 s)
+[ 9/30] geolocation                hit_rate=1.00  mrr=1.00  faithfulness=1.00  answer_relevancy=0.94  context_precision=1.00  context_recall=0.50  hallucination=1.00  (67 s)
+[10/30] dark-mode                  hit_rate=0.00  mrr=0.00  faithfulness=1.00  answer_relevancy=0.00  context_precision=0.00  context_recall=1.00  hallucination=0.00  (33 s)
+[11/30] offline-mode               hit_rate=1.00  mrr=1.00  faithfulness=1.00  answer_relevancy=0.94  context_precision=1.00  context_recall=1.00  hallucination=1.00  (48 s)
+[12/30] locale-timezone            hit_rate=1.00  mrr=1.00  faithfulness=0.12  answer_relevancy=0.85  context_precision=1.00  context_recall=0.00  hallucination=1.00  (97 s)
+[13/30] block-images               hit_rate=1.00  mrr=1.00  faithfulness=1.00  answer_relevancy=0.89  context_precision=1.00  context_recall=1.00  hallucination=1.00  (100 s)
+[14/30] http-auth                  hit_rate=1.00  mrr=1.00  faithfulness=1.00  answer_relevancy=0.96  context_precision=1.00  context_recall=1.00  hallucination=1.00  (88 s)
+[15/30] proxy                      hit_rate=1.00  mrr=1.00  faithfulness=0.17  answer_relevancy=0.87  context_precision=1.00  context_recall=1.00  hallucination=1.00  (78 s)
+[16/30] mock-api                   hit_rate=1.00  mrr=1.00  faithfulness=0.09  answer_relevancy=0.89  context_precision=1.00  context_recall=1.00  hallucination=1.00  (170 s)
+[17/30] har-replay                 hit_rate=1.00  mrr=1.00  faithfulness=0.20  answer_relevancy=0.80  context_precision=1.00  context_recall=0.50  hallucination=1.00  (109 s)
+[18/30] reuse-auth-state           hit_rate=1.00  mrr=1.00  faithfulness=0.00  answer_relevancy=0.88  context_precision=1.00  context_recall=1.00  hallucination=1.00  (128 s)
+
+## Pass 4 (unload_every 3; finished)
+rag-eval-gate 0.1.0: 30 questions, profile local, generator ollama/qwen3:8b, judge qwen3:8b, top_k 1, chunk_size 300, 563 chunks
+[ 8/30] screenshot-buffer          hit_rate=1.00  mrr=1.00  faithfulness=1.00  answer_relevancy=0.90  context_precision=1.00  context_recall=1.00  hallucination=1.00  (132 s)
+[19/30] session-storage            hit_rate=1.00  mrr=1.00  faithfulness=0.14  answer_relevancy=0.81  context_precision=1.00  context_recall=1.00  hallucination=1.00  (88 s)
+[20/30] actionability-click        hit_rate=0.00  mrr=0.00  faithfulness=0.62  answer_relevancy=0.98  context_precision=0.00  context_recall=0.00  hallucination=1.00  (80 s)
+[21/30] force-click                hit_rate=1.00  mrr=1.00  faithfulness=0.67  answer_relevancy=0.92  context_precision=1.00  context_recall=1.00  hallucination=1.00  (110 s)
+[22/30] upload-files               hit_rate=1.00  mrr=1.00  faithfulness=0.60  answer_relevancy=0.87  context_precision=1.00  context_recall=1.00  hallucination=1.00  (73 s)
+[23/30] drag-and-drop              hit_rate=1.00  mrr=1.00  faithfulness=0.50  answer_relevancy=0.95  context_precision=1.00  context_recall=1.00  hallucination=1.00  (96 s)
+[24/30] select-option              hit_rate=1.00  mrr=1.00  faithfulness=0.67  answer_relevancy=0.83  context_precision=1.00  context_recall=1.00  hallucination=1.00  (130 s)
+[25/30] type-like-user             hit_rate=1.00  mrr=1.00  faithfulness=1.00  answer_relevancy=0.94  context_precision=1.00  context_recall=1.00  hallucination=1.00  (65 s)
+[26/30] assertion-timeout          hit_rate=1.00  mrr=1.00  faithfulness=0.33  answer_relevancy=0.87  context_precision=1.00  context_recall=0.50  hallucination=1.00  (49 s)
+[27/30] soft-assertions            hit_rate=1.00  mrr=1.00  faithfulness=0.33  answer_relevancy=0.98  context_precision=1.00  context_recall=0.00  hallucination=1.00  (113 s)
+[28/30] base-url                   hit_rate=1.00  mrr=1.00  faithfulness=0.14  answer_relevancy=0.71  context_precision=1.00  context_recall=0.00  hallucination=1.00  (80 s)
+[29/30] parallel-tests             hit_rate=0.00  mrr=0.00  faithfulness=0.14  answer_relevancy=0.99  context_precision=0.00  context_recall=0.00  hallucination=0.00  (108 s)
+[30/30] record-trace               hit_rate=1.00  mrr=1.00  faithfulness=0.60  answer_relevancy=0.76  context_precision=0.00  context_recall=0.00  hallucination=1.00  (159 s)
+hit_rate           0.900  (n=30)
+mrr                0.900  (n=30)
+faithfulness       0.576  (n=30)
+answer_relevancy   0.864  (n=30)
+context_precision  0.867  (n=30)
+context_recall     0.750  (n=30)
+hallucination      0.933  (n=30)
+judge/LLM requests: 133 (2 empty completions, 1 aborted, 11 runner reloads, 0 answered by a JSON fallback); results: results/degraded.json
