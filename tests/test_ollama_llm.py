@@ -90,54 +90,97 @@ def test_empty_completion_is_retried_with_a_new_seed_then_raises() -> None:
     assert client.empty_completions == 2
 
 
-def grammar_broken_server(fallback_answers: list[str]):
-    """Ollama whose runner fails every `format` request: HTTP 200 with an empty message.
+REPEAT_ABORT = httpx.Response(500, json={"error": "prediction aborted, token repeat limit reached"})
+EMPTY = httpx.Response(200, json={"message": {"content": ""}, "done_reason": "stop"})
 
-    This is what the degraded run hit: llama-server raised "Unexpected empty grammar
-    stack" on each structured request, while unconstrained requests kept working.
+
+def faulty_server(json_mode: list[httpx.Response], free: list[httpx.Response]):
+    """Ollama as the degraded runs met it.
+
+    Every request constrained by a JSON schema gets HTTP 200 with an empty message
+    (llama-server raised "Unexpected empty grammar stack"). JSON-mode and unconstrained
+    requests answer from the given lists, in order.
     """
     requests: list[dict[str, Any]] = []
-    answers = list(fallback_answers)
+    queues = {"json": list(json_mode), "free": list(free)}
 
     def handler(request: httpx.Request) -> httpx.Response:
         body = json.loads(request.content)
         requests.append(body)
-        if "format" in body:
-            return httpx.Response(200, json={"message": {"content": ""}, "done_reason": "stop"})
-        return chat_ok(answers.pop(0))
+        if isinstance(body.get("format"), dict):
+            return EMPTY
+        return queues["json" if body.get("format") == "json" else "free"].pop(0)
 
     http = httpx.Client(transport=httpx.MockTransport(handler))
     return OllamaClient(client=http, backoff_s=0, seed=42), requests
 
 
-def test_structured_chat_falls_back_to_unconstrained_json_when_format_returns_empty() -> None:
+def kinds(requests: list[dict[str, Any]]) -> list[str]:
+    return [
+        "schema" if isinstance(r.get("format"), dict) else str(r.get("format", "free"))
+        for r in requests
+    ]
+
+
+def test_structured_chat_falls_back_to_json_mode_when_the_schema_request_is_empty() -> None:
     schema = {"type": "object", "properties": {"verdict": {"type": "string"}}}
-    client, requests = grammar_broken_server(['```json\n{"verdict": "yes"}\n```'])
+    client, requests = faulty_server([chat_ok('{"verdict": "yes"}')], [])
     result = client.chat("m", [{"role": "user", "content": "judge this"}], schema=schema)
     assert json.loads(result.text) == {"verdict": "yes"}
     assert (result.schema_fallback, result.retries) == (True, 2)
-    # two constrained attempts with different seeds, then one without `format`
-    assert ["format" in r for r in requests] == [True, True, False]
+    # two schema-constrained attempts with different seeds, then JSON mode
+    assert kinds(requests) == ["schema", "schema", "json"]
     assert [r["options"]["seed"] for r in requests] == [42, 43, 44]
     prompt = requests[2]["messages"][-1]["content"]
     assert prompt.startswith("judge this")
     assert json.dumps(schema) in prompt
     assert requests[0]["messages"][-1]["content"] == "judge this"  # original left untouched
     assert requests[2]["options"]["num_ctx"] == 16384
+    assert "repeat_penalty" not in requests[2]["options"]
     assert (client.empty_completions, client.schema_fallbacks) == (2, 1)
 
 
-def test_structured_fallback_retries_unparseable_answers_then_raises() -> None:
-    client, requests = grammar_broken_server(["not json", '{"ok": 1}'])
-    assert client.chat("m", [], schema={"type": "object"}).text == '{"ok": 1}'
-    assert [r["options"]["seed"] for r in requests] == [42, 43, 44, 45]
-    assert requests[2]["messages"][0]["role"] == "user"  # schema prompt added to no messages
+def test_repeat_limit_abort_is_not_retried_unchanged_and_the_request_is_relaxed() -> None:
+    # The answer_relevancy case: schema requests come back empty and the replacement
+    # request is aborted with HTTP 500 "token repeat limit reached".
+    client, requests = faulty_server(
+        [REPEAT_ABORT],
+        [REPEAT_ABORT, chat_ok('```json\n{"question": "q", "noncommittal": 0}\n```')],
+    )
+    result = client.chat("m", [{"role": "user", "content": "p"}], schema={"type": "object"})
+    assert json.loads(result.text) == {"question": "q", "noncommittal": 0}
+    assert result.schema_fallback is True
+    # one request per step: an abort moves on instead of repeating the same request 5 times
+    assert kinds(requests) == ["schema", "schema", "json", "free", "free"]
+    assert [r["options"]["seed"] for r in requests] == [42, 43, 44, 45, 46]
+    for free in requests[3:]:
+        assert free["options"]["repeat_penalty"] == 1.15
+        assert free["options"]["num_predict"] == 1024
+        assert free["options"]["num_ctx"] == 16384
+    assert "repeat_penalty" not in requests[0]["options"]
+    assert (client.empty_completions, client.aborted_completions) == (2, 2)
+    assert client.schema_fallbacks == 1
 
-    client, requests = grammar_broken_server(["still not json", ""])
-    with pytest.raises(OllamaError, match="no JSON object in the unconstrained fallback"):
-        client.chat("m", [], schema={"type": "object"})
-    assert len(requests) == 4
-    assert client.schema_fallbacks == 0
+
+def test_structured_chat_raises_with_every_problem_when_all_steps_fail() -> None:
+    client, requests = faulty_server([chat_ok("not json")], [REPEAT_ABORT, EMPTY])
+    with pytest.raises(OllamaError) as excinfo:
+        client.chat("m", [], schema={"type": "object"}, max_tokens=200)
+    message = str(excinfo.value)
+    assert "no usable completion" in message
+    assert "no JSON object in the fallback answer" in message
+    assert "aborted (token repeat limit)" in message
+    assert len(requests) == 5
+    assert requests[2]["messages"][0]["role"] == "user"  # schema prompt added to no messages
+    assert requests[3]["options"]["num_predict"] == 200  # the caller's lower cap is kept
+    assert (client.schema_fallbacks, client.empty_completions) == (0, 3)
+
+
+def test_plain_chat_gets_a_new_seed_after_a_repeat_limit_abort() -> None:
+    client, requests = client_with([REPEAT_ABORT, chat_ok("answer")], seed=7)
+    assert client.chat("m", []).text == "answer"
+    assert [r["options"]["seed"] for r in requests] == [7, 8]
+    assert client.aborted_completions == 1
 
 
 def test_successful_structured_chat_does_not_use_the_fallback() -> None:
