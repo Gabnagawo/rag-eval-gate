@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import io
 import shutil
+from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -8,7 +10,7 @@ import pytest
 import yaml
 from typer.testing import CliRunner
 
-from rag_eval_gate.cli import app
+from rag_eval_gate.cli import app, echo
 from rag_eval_gate.config import RagConfig, Threshold, load_eval_config, load_rag_config
 from rag_eval_gate.evaluate import (
     Evaluator,
@@ -187,6 +189,55 @@ def test_markdown_with_and_without_baseline() -> None:
     assert "✅ RAG eval gate passed" in render_markdown(evaluate_gate(ok, thresholds), ok)
 
 
+def test_evaluator_unloads_every_n_scored_questions(rag_cfg: RagConfig, tmp_path: Path) -> None:
+    events: list[str] = []
+
+    def metric(s: Sample) -> float:
+        events.append(s.id)
+        return 1.0
+
+    fns = {"m": metric}
+    items = [ITEMS[i % len(ITEMS)].model_copy(update={"id": f"q{i}"}) for i in range(5)]
+
+    def unload() -> None:
+        events.append("unload")
+
+    def run(out: str, unload_every: int | None, callback: Callable[[], None] | None) -> None:
+        events.clear()
+        info = run_info(rag_cfg, ["m"])
+        Evaluator(
+            pipeline(rag_cfg), fns, tmp_path / out, info, unload_every=unload_every, unload=callback
+        ).run(items, resume=True)
+
+    run("a.json", 2, unload)
+    # between questions only: never before the first one, never after the last one
+    assert events == ["q0", "q1", "unload", "q2", "q3", "unload", "q4"]
+    run("a.json", 2, unload)
+    assert events == []  # everything already scored: nothing to unload for
+    run("b.json", None, unload)
+    assert "unload" not in events  # off by default
+    run("c.json", 1, None)
+    assert events == ["q0", "q1", "q2", "q3", "q4"]  # no callback: nothing to call
+
+
+def test_echo_survives_a_console_that_cannot_encode_the_text(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    raw = io.BytesIO()
+    monkeypatch.setattr("sys.stdout", io.TextIOWrapper(raw, encoding="cp1252", newline="\n"))
+    echo("\u2705 RAG eval gate passed")
+    assert raw.getvalue() == b"? RAG eval gate passed\n"
+
+
+def test_cli_passes_the_profile_unload_setting(project: Path) -> None:
+    # Offline runs never call Ollama, so the option is accepted and ignored.
+    out = runner.invoke(
+        app, ["eval", "--offline", "--unload-every", "1", "--out", "results/u.json"]
+    )
+    assert out.exit_code == 0, out.output
+    assert "0 runner reloads" in out.output
+
+
 def test_committed_configs_load() -> None:
     # rag.yaml is what a retrieval PR edits, so only its validity is asserted here.
     cfg = load_rag_config(ROOT / "rag.yaml")
@@ -199,6 +250,8 @@ def test_committed_configs_load() -> None:
     assert ci.limit == 8
     assert set(ci.thresholds) == set(ecfg.metrics)
     assert ecfg.profile("local").limit is None
+    assert ci.unload_every is None  # off unless a profile asks for it
+    assert ecfg.profile("local").unload_every == 3
     with pytest.raises(KeyError, match="unknown profile"):
         ecfg.profile("nope")
     with pytest.raises(ValueError, match="chunk_overlap"):

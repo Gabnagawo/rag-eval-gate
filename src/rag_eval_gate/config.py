@@ -88,6 +88,11 @@ class Profile(BaseModel):
     generator_model: str = "qwen3:8b"
     judge_model: str = "qwen3:8b"
     limit: int | None = Field(default=None, ge=1, description="Evaluate the first N questions.")
+    unload_every: int | None = Field(
+        default=None,
+        ge=1,
+        description="Unload the Ollama models after every N scored questions (off by default).",
+    )
     thresholds: dict[str, Threshold]
 
 
