@@ -183,8 +183,8 @@ def run_eval(
         echo(f"{name:<18} {mean}  (n={s.n}{failed})")
     echo(
         f"judge/LLM requests: {client.calls} ({client.empty_completions} empty completions, "
-        f"{client.aborted_completions} aborted, {client.schema_fallbacks} answered by a "
-        f"JSON fallback); "
+        f"{client.aborted_completions} aborted, {client.runner_reloads} runner reloads, "
+        f"{client.schema_fallbacks} answered by a JSON fallback); "
         f"results: {out.as_posix()}"
     )
 

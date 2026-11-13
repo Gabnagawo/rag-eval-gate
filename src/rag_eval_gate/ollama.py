@@ -84,6 +84,7 @@ class OllamaClient:
         timeout_s: float = 300.0,
         retries: int = 4,
         backoff_s: float = 5.0,
+        reload_on_fault: bool = False,
         client: httpx.Client | None = None,
     ) -> None:
         self.host = host.rstrip("/")
@@ -92,12 +93,14 @@ class OllamaClient:
         self.seed = seed
         self.retries = retries
         self.backoff_s = backoff_s
+        self.reload_on_fault = reload_on_fault
         self.client = client or httpx.Client(timeout=timeout_s)
         self._lock = threading.Lock()
         self.calls = 0
         self.empty_completions = 0
         self.aborted_completions = 0
         self.schema_fallbacks = 0
+        self.runner_reloads = 0
 
     def options(self) -> dict[str, Any]:
         # Qwen3 model card: non-thinking T=0.7/top_p=0.8, thinking T=0.6/top_p=0.95, top_k=20,
@@ -154,9 +157,12 @@ class OllamaClient:
         - HTTP 500 "prediction aborted, token repeat limit reached", on the unconstrained
           request that replaced a failing ``format`` request, five seeds in a row.
 
-        So a request is tried in steps, each with a new seed, until one gives an answer:
+        Both started a few minutes into a run and then hit most requests on that runner,
+        while a freshly loaded runner answered the same requests. So a request is tried
+        in steps, each with a new seed, until one gives an answer:
 
-        1. as asked, twice;
+        1. as asked, twice; with ``reload_on_fault`` the model is unloaded after the
+           first failure, so the second attempt runs on a new runner;
         2. structured only: JSON mode (``format: "json"``) with the schema in the prompt;
         3. structured only: no ``format``, the schema in the prompt, a mild repeat
            penalty and a token cap, twice.
@@ -195,12 +201,14 @@ class OllamaClient:
             except OllamaAbortedError:
                 self.aborted_completions += 1
                 problems.append("aborted (token repeat limit)")
+                self._reload_after_first_fault(model, step)
                 continue
             retries += post_retries
             text = self._text(data)
             if not text:
                 self.empty_completions += 1
                 problems.append(f"empty completion (done_reason={data.get('done_reason')!r})")
+                self._reload_after_first_fault(model, step)
                 continue
             if not fallback:
                 return self._result(text, data, start, retries + step)
@@ -210,6 +218,24 @@ class OllamaClient:
                 return self._result(found, data, start, retries + step, fallback=True)
             problems.append("no JSON object in the fallback answer")
         raise OllamaError(f"ollama gave no usable completion for {model}: {'; '.join(problems)}")
+
+    def _reload_after_first_fault(self, model: str, step: int) -> None:
+        if self.reload_on_fault and step == 0:
+            self.unload(model)
+
+    def unload(self, model: str) -> None:
+        """Ask Ollama to unload ``model`` (keep_alive 0); the next request loads a new runner.
+
+        Best effort: a failure here is ignored and the next step runs anyway.
+        """
+        try:
+            with self._lock:
+                self.client.post(
+                    f"{self.host}/api/generate", json={"model": model, "keep_alive": 0}
+                )
+        except httpx.HTTPError:
+            return
+        self.runner_reloads += 1
 
     @staticmethod
     def _text(data: dict[str, Any]) -> str:
