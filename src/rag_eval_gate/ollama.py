@@ -7,8 +7,8 @@ It is written for a server shared with other processes:
 - embeddings one input per request, with all-zero vectors rejected and retried
   (batched requests to a busy Ollama 0.40 returned corrupted rows);
 - retries with exponential backoff and a new seed per retry;
-- an empty completion is retried with a new seed and, for structured output, falls
-  back to an unconstrained request with the schema in the prompt (see ``chat``).
+- an empty or aborted completion is retried with a new seed and, for structured output,
+  falls back to JSON mode and then to an unconstrained request (see ``chat``).
 """
 
 from __future__ import annotations
@@ -43,8 +43,23 @@ def extract_json_object(text: str) -> str | None:
     return candidate if isinstance(parsed, dict) else None
 
 
+# Ollama's HTTP 500 body when it stops a generation that repeats one token.
+_REPEAT_ABORT = "token repeat limit reached"
+# Options for the unconstrained fallback: a mild repeat penalty against the loop that
+# triggers the abort, and a cap so a runaway answer cannot fill the context.
+FALLBACK_REPEAT_PENALTY = 1.15
+FALLBACK_MAX_TOKENS = 1024
+
+
 class OllamaError(RuntimeError):
     """Ollama did not return a usable answer after retries."""
+
+
+class OllamaAbortedError(OllamaError):
+    """Ollama stopped the generation itself (token repeat limit).
+
+    The same request fails the same way, so the caller changes it instead of waiting.
+    """
 
 
 @dataclass(frozen=True)
@@ -81,6 +96,7 @@ class OllamaClient:
         self._lock = threading.Lock()
         self.calls = 0
         self.empty_completions = 0
+        self.aborted_completions = 0
         self.schema_fallbacks = 0
 
     def options(self) -> dict[str, Any]:
@@ -112,6 +128,8 @@ class OllamaClient:
                 if resp.status_code == 200:
                     return resp.json(), attempt
                 last_error = f"HTTP {resp.status_code}: {resp.text[:300]}"
+                if _REPEAT_ABORT in resp.text:
+                    raise OllamaAbortedError(f"ollama {path} {last_error}")
                 if resp.status_code < 500 and resp.status_code != 429:
                     raise OllamaError(f"ollama {path} {last_error}")
             if attempt < self.retries:
@@ -128,17 +146,23 @@ class OllamaClient:
     ) -> ChatResult:
         """Chat completion; with ``schema`` the answer is constrained to that JSON schema.
 
-        Ollama can answer HTTP 200 with an empty message: its llama-server raised
-        ("Unexpected empty grammar stack after accepting piece") on the first sampled
-        token of a ``format`` request, and kept doing so for every later ``format``
-        request on that runner while unconstrained requests still worked. An immediate
-        retry with the same seed hits the same cached state and fails the same way, so:
+        Two server-side failures were observed on a shared Ollama 0.40 with qwen3:8b:
 
-        1. the request is retried once with a different seed;
-        2. a structured request then drops ``format``, puts the schema in the prompt
-           and accepts the answer only if it contains a parseable JSON object.
+        - HTTP 200 with an empty message. llama-server raised "Unexpected empty grammar
+          stack after accepting piece" on the first sampled token of a ``format``
+          request; a retry with the same seed hit the same cached state and failed again.
+        - HTTP 500 "prediction aborted, token repeat limit reached", on the unconstrained
+          request that replaced a failing ``format`` request, five seeds in a row.
 
-        The caller still validates the JSON against its own model.
+        So a request is tried in steps, each with a new seed, until one gives an answer:
+
+        1. as asked, twice;
+        2. structured only: JSON mode (``format: "json"``) with the schema in the prompt;
+        3. structured only: no ``format``, the schema in the prompt, a mild repeat
+           penalty and a token cap, twice.
+
+        Steps 2 and 3 count only if the answer contains a parseable JSON object. The
+        caller still validates the JSON against its own model.
         """
         start = time.perf_counter()
         options = self.options()
@@ -151,32 +175,41 @@ class OllamaClient:
             "think": self.think,
             "options": options,
         }
+        steps: list[tuple[dict[str, Any], bool]] = [(payload, False), (payload, False)]
         if schema is not None:
             payload["format"] = schema
+            json_mode = self._with_schema_in_prompt(payload, schema)
+            json_mode["format"] = "json"
+            free = self._with_schema_in_prompt(payload, schema)
+            free["options"]["repeat_penalty"] = FALLBACK_REPEAT_PENALTY
+            free["options"]["num_predict"] = min(
+                options.get("num_predict", FALLBACK_MAX_TOKENS), FALLBACK_MAX_TOKENS
+            )
+            steps += [(json_mode, True), (free, True), (free, True)]
+
         retries = 0
-        last = "empty completion"
-        for empty_retry in range(2):
-            data, post_retries = self._post("/api/chat", payload, seed_offset=empty_retry)
+        problems: list[str] = []
+        for step, (request, fallback) in enumerate(steps):
+            try:
+                data, post_retries = self._post("/api/chat", request, seed_offset=step)
+            except OllamaAbortedError:
+                self.aborted_completions += 1
+                problems.append("aborted (token repeat limit)")
+                continue
             retries += post_retries
             text = self._text(data)
-            if text:
-                return self._result(text, data, start, retries + empty_retry)
-            self.empty_completions += 1
-            last = f"empty completion (done_reason={data.get('done_reason')!r})"
-        if schema is not None:
-            fallback = self._without_format(payload, schema)
-            for attempt in range(2):
-                data, post_retries = self._post("/api/chat", fallback, seed_offset=2 + attempt)
-                retries += post_retries
-                text = self._text(data)
-                found = extract_json_object(text)
-                if found is not None:
-                    self.schema_fallbacks += 1
-                    return self._result(found, data, start, retries + 2 + attempt, fallback=True)
-                if not text:
-                    self.empty_completions += 1
-                last = "no JSON object in the unconstrained fallback answer"
-        raise OllamaError(f"ollama returned an empty completion for {model}: {last}")
+            if not text:
+                self.empty_completions += 1
+                problems.append(f"empty completion (done_reason={data.get('done_reason')!r})")
+                continue
+            if not fallback:
+                return self._result(text, data, start, retries + step)
+            found = extract_json_object(text)
+            if found is not None:
+                self.schema_fallbacks += 1
+                return self._result(found, data, start, retries + step, fallback=True)
+            problems.append("no JSON object in the fallback answer")
+        raise OllamaError(f"ollama gave no usable completion for {model}: {'; '.join(problems)}")
 
     @staticmethod
     def _text(data: dict[str, Any]) -> str:
@@ -196,18 +229,18 @@ class OllamaClient:
         )
 
     @staticmethod
-    def _without_format(payload: dict[str, Any], schema: dict[str, Any]) -> dict[str, Any]:
-        """The same request without ``format``; the schema goes into the last message."""
+    def _with_schema_in_prompt(payload: dict[str, Any], schema: dict[str, Any]) -> dict[str, Any]:
+        """A copy of the request without ``format``; the schema goes into the last message."""
         messages = [dict(m) for m in payload["messages"]]
         instruction = f"{_SCHEMA_INSTRUCTION}\n{json.dumps(schema)}"
         if messages:
             messages[-1]["content"] = f"{messages[-1]['content']}\n\n{instruction}"
         else:
             messages.append({"role": "user", "content": instruction})
-        fallback = {k: v for k, v in payload.items() if k != "format"}
-        fallback["messages"] = messages
-        fallback["options"] = dict(payload["options"])
-        return fallback
+        request = {k: v for k, v in payload.items() if k != "format"}
+        request["messages"] = messages
+        request["options"] = dict(payload["options"])
+        return request
 
     def embed(self, model: str, text: str) -> list[float]:
         """One input per request; an all-zero vector is treated as a failed request."""

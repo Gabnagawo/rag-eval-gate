@@ -77,3 +77,26 @@ uv run rag-gate eval --only custom-test-id-attribute --only popup-window --only 
 
 The baseline judges are unaffected: one of 15 judged scores moved (context_precision on
 `popup-window`, 1.00 to 0.92).
+
+## Follow-up: the fallback was aborted (answer_relevancy)
+
+The first full degraded run with the fix above scored 15 questions before the host memory
+guard stopped it. From question 7 on, `answer_relevancy` failed 9 times in a row with
+`HTTP 500: {"error":"prediction aborted, token repeat limit reached"}`: the grammar fault
+came back for that one schema, and the unconstrained replacement request made the model
+repeat a token until Ollama aborted it. The client treated that 500 as transient and sent
+the same request five times with backoff (about two minutes per question, never successful).
+The other four judges kept working.
+
+Change in `OllamaClient.chat`:
+
+- an abort with "token repeat limit reached" is no longer retried unchanged; it moves to
+  the next step (`OllamaAbortedError`);
+- after two schema-constrained attempts, a structured request tries JSON mode
+  (`format: "json"`, schema in the prompt), then twice without `format`, with
+  `repeat_penalty` 1.15 and at most 1024 new tokens. Every step uses a new seed;
+- `rag-gate eval` also prints the number of aborted completions.
+
+Unit tests cover the sequence with a fake server (`tests/test_ollama_llm.py`). Whether
+JSON mode or the repeat penalty avoids the abort on the real server is shown by the
+counters of the resumed degraded run in `docs/results/degraded-console.txt`.
