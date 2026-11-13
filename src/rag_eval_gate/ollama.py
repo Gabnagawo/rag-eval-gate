@@ -6,11 +6,14 @@ It is written for a server shared with other processes:
 - the same ``num_ctx`` on every chat request, so the model is never reloaded;
 - embeddings one input per request, with all-zero vectors rejected and retried
   (batched requests to a busy Ollama 0.40 returned corrupted rows);
-- retries with exponential backoff and a new seed per retry.
+- retries with exponential backoff and a new seed per retry;
+- an empty completion is retried with a new seed and, for structured output, falls
+  back to an unconstrained request with the schema in the prompt (see ``chat``).
 """
 
 from __future__ import annotations
 
+import json
 import re
 import threading
 import time
@@ -21,6 +24,23 @@ from typing import Any
 import httpx
 
 _THINK_RE = re.compile(r"<think>.*?</think>", flags=re.DOTALL)
+_SCHEMA_INSTRUCTION = (
+    "Respond with a single JSON object that conforms to this JSON schema. "
+    "Output only the JSON object, with no code fence and no other text."
+)
+
+
+def extract_json_object(text: str) -> str | None:
+    """The outermost ``{...}`` of ``text`` if it parses as a JSON object, else None."""
+    start, end = text.find("{"), text.rfind("}")
+    if start < 0 or end <= start:
+        return None
+    candidate = text[start : end + 1]
+    try:
+        parsed = json.loads(candidate)
+    except ValueError:
+        return None
+    return candidate if isinstance(parsed, dict) else None
 
 
 class OllamaError(RuntimeError):
@@ -34,6 +54,8 @@ class ChatResult:
     prompt_tokens: int | None
     completion_tokens: int | None
     retries: int
+    # True when the JSON came from the unconstrained fallback, not from `format`.
+    schema_fallback: bool = False
 
 
 class OllamaClient:
@@ -58,6 +80,8 @@ class OllamaClient:
         self.client = client or httpx.Client(timeout=timeout_s)
         self._lock = threading.Lock()
         self.calls = 0
+        self.empty_completions = 0
+        self.schema_fallbacks = 0
 
     def options(self) -> dict[str, Any]:
         # Qwen3 model card: non-thinking T=0.7/top_p=0.8, thinking T=0.6/top_p=0.95, top_k=20,
@@ -71,11 +95,13 @@ class OllamaClient:
             "presence_penalty": 1.5,
         }
 
-    def _post(self, path: str, payload: dict[str, Any]) -> tuple[dict[str, Any], int]:
+    def _post(
+        self, path: str, payload: dict[str, Any], seed_offset: int = 0
+    ) -> tuple[dict[str, Any], int]:
         last_error = "no attempt made"
         for attempt in range(self.retries + 1):
             if "options" in payload and self.seed is not None:
-                payload["options"]["seed"] = self.seed + attempt
+                payload["options"]["seed"] = self.seed + seed_offset + attempt
             try:
                 with self._lock:
                     self.calls += 1
@@ -100,7 +126,20 @@ class OllamaClient:
         schema: dict[str, Any] | None = None,
         max_tokens: int | None = None,
     ) -> ChatResult:
-        """Chat completion; with ``schema`` the answer is constrained to that JSON schema."""
+        """Chat completion; with ``schema`` the answer is constrained to that JSON schema.
+
+        Ollama can answer HTTP 200 with an empty message: its llama-server raised
+        ("Unexpected empty grammar stack after accepting piece") on the first sampled
+        token of a ``format`` request, and kept doing so for every later ``format``
+        request on that runner while unconstrained requests still worked. An immediate
+        retry with the same seed hits the same cached state and fails the same way, so:
+
+        1. the request is retried once with a different seed;
+        2. a structured request then drops ``format``, puts the schema in the prompt
+           and accepts the answer only if it contains a parseable JSON object.
+
+        The caller still validates the JSON against its own model.
+        """
         start = time.perf_counter()
         options = self.options()
         if max_tokens:
@@ -114,18 +153,61 @@ class OllamaClient:
         }
         if schema is not None:
             payload["format"] = schema
+        retries = 0
+        last = "empty completion"
         for empty_retry in range(2):
-            data, retries = self._post("/api/chat", payload)
-            text = _THINK_RE.sub("", str(data.get("message", {}).get("content") or "")).strip()
+            data, post_retries = self._post("/api/chat", payload, seed_offset=empty_retry)
+            retries += post_retries
+            text = self._text(data)
             if text:
-                return ChatResult(
-                    text=text,
-                    latency_s=round(time.perf_counter() - start, 3),
-                    prompt_tokens=data.get("prompt_eval_count"),
-                    completion_tokens=data.get("eval_count"),
-                    retries=retries + empty_retry,
-                )
-        raise OllamaError(f"ollama returned an empty completion for {model}")
+                return self._result(text, data, start, retries + empty_retry)
+            self.empty_completions += 1
+            last = f"empty completion (done_reason={data.get('done_reason')!r})"
+        if schema is not None:
+            fallback = self._without_format(payload, schema)
+            for attempt in range(2):
+                data, post_retries = self._post("/api/chat", fallback, seed_offset=2 + attempt)
+                retries += post_retries
+                text = self._text(data)
+                found = extract_json_object(text)
+                if found is not None:
+                    self.schema_fallbacks += 1
+                    return self._result(found, data, start, retries + 2 + attempt, fallback=True)
+                if not text:
+                    self.empty_completions += 1
+                last = "no JSON object in the unconstrained fallback answer"
+        raise OllamaError(f"ollama returned an empty completion for {model}: {last}")
+
+    @staticmethod
+    def _text(data: dict[str, Any]) -> str:
+        return _THINK_RE.sub("", str(data.get("message", {}).get("content") or "")).strip()
+
+    @staticmethod
+    def _result(
+        text: str, data: dict[str, Any], start: float, retries: int, fallback: bool = False
+    ) -> ChatResult:
+        return ChatResult(
+            text=text,
+            latency_s=round(time.perf_counter() - start, 3),
+            prompt_tokens=data.get("prompt_eval_count"),
+            completion_tokens=data.get("eval_count"),
+            retries=retries,
+            schema_fallback=fallback,
+        )
+
+    @staticmethod
+    def _without_format(payload: dict[str, Any], schema: dict[str, Any]) -> dict[str, Any]:
+        """The same request without ``format``; the schema goes into the last message."""
+        messages = [dict(m) for m in payload["messages"]]
+        instruction = f"{_SCHEMA_INSTRUCTION}\n{json.dumps(schema)}"
+        if messages:
+            messages[-1]["content"] = f"{messages[-1]['content']}\n\n{instruction}"
+        else:
+            messages.append({"role": "user", "content": instruction})
+        fallback = {k: v for k, v in payload.items() if k != "format"}
+        fallback["messages"] = messages
+        fallback["options"] = dict(payload["options"])
+        return fallback
 
     def embed(self, model: str, text: str) -> list[float]:
         """One input per request; an all-zero vector is treated as a failed request."""

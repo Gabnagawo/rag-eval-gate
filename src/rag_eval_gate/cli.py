@@ -181,7 +181,11 @@ def run_eval(
         mean = f"{s.mean:.3f}" if s.mean is not None else "n/a"
         failed = f", {s.failed} failed" if s.failed else ""
         echo(f"{name:<18} {mean}  (n={s.n}{failed})")
-    echo(f"judge/LLM requests: {client.calls}; results: {out.as_posix()}")
+    echo(
+        f"judge/LLM requests: {client.calls} ({client.empty_completions} empty completions, "
+        f"{client.schema_fallbacks} answered by the unconstrained JSON fallback); "
+        f"results: {out.as_posix()}"
+    )
 
 
 @app.command()
