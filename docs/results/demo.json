@@ -1,0 +1,599 @@
+{
+  "schema_version": 1,
+  "run": {
+    "run_id": "demo",
+    "profile": "ci",
+    "started_at": "2026-11-13T04:57:09.927603Z",
+    "finished_at": "2026-11-13T05:19:22.077455Z",
+    "generator": "ollama/qwen3:8b",
+    "judge_model": "qwen3:8b",
+    "embed_model": "nomic-embed-text",
+    "rag_config": {
+      "corpus_dir": "data\\corpus",
+      "chunk_size": 1200,
+      "chunk_overlap": 150,
+      "top_k": 4,
+      "embed_model": "nomic-embed-text",
+      "query_prefix": "search_query: ",
+      "document_prefix": "search_document: ",
+      "max_answer_tokens": 400
+    },
+    "corpus_sha256": "ad7e86ab7e942a6422ff171cce42c754233d62336f4f25df329eb16a8a10ad24",
+    "golden_sha256": "973030887bc8ec98fb13712873a5700e85bd8d9f4eb42def46df3d79ef87bde5",
+    "metrics": [
+      "hit_rate",
+      "mrr",
+      "faithfulness",
+      "answer_relevancy",
+      "context_precision",
+      "context_recall",
+      "hallucination"
+    ],
+    "versions": {
+      "python": "3.12.10",
+      "rag-eval-gate": "0.1.0",
+      "ragas": "0.4.3",
+      "deepeval": "4.3.4",
+      "numpy": "2.5.4"
+    },
+    "platform": ""
+  },
+  "samples": [
+    {
+      "id": "custom-test-id-attribute",
+      "question": "How do I make get_by_test_id use a custom attribute such as data-pw instead of data-testid?",
+      "reference": "Call playwright.selectors.set_test_id_attribute(\"data-pw\") before locating elements; get_by_test_id then matches the data-pw attribute.",
+      "sources": [
+        "locators"
+      ],
+      "answer": "To make `get_by_test_id` use a custom attribute like `data-pw`, set the test id attribute using `playwright.selectors.set_test_id_attribute(\"data-pw\")` before locating elements. This configuration changes the default attribute used by `get_by_test_id` to your custom data attribute.",
+      "contexts": [
+        "By default, `page.get_by_test_id` will locate elements based on the `data-testid` attribute, but you can configure it in your test config or by calling `selectors.set_test_id_attribute`.\n\nSet the test id to use a custom data attribute for your tests.\n\n```python\nplaywright.selectors.set_test_id_attribute(\"data-pw\")\n```\n\nIn your html you can now use `data-pw` as your test id instead of the default `data-testid`.\n\n```html\n<button data-pw=\"directions\">Itinéraire</button>\n```\n\nAnd then locate the element as you would normally do:\n\n```python\npage.get_by_test_id(\"directions\").click()\n```",
+        "Use the `page.get_by_test_id` method to locate an element in a list. You may need to modify the html and add a test id if you don't already have a test id.\n\nFor example, consider the following DOM structure:\n\n```html\n<ul>\n  <li data-testid='apple'>apple</li>\n  <li data-testid='banana'>banana</li>\n  <li data-testid='orange'>orange</li>\n</ul>\n```\n\nLocate an item by its test id of \"orange\" and then click it.\n\n```python\npage.get_by_test_id(\"orange\").click()\n```",
+        "Testing by test ids is the most resilient way of testing as even if your text or role of the attribute changes, the test will still pass. QA's and developers should define explicit test ids and query them with `page.get_by_test_id`. However testing by test ids is not user facing. If the role or text value is important to you then consider using user facing locators such as role and text locators.\n\nFor example, consider the following DOM structure.\n\n```html\n<button data-testid=\"directions\">Itinéraire</button>\n```\n\nYou can locate the element by its test id:\n\n```python\npage.get_by_test_id(\"directions\").click()\n```\n\n:::note[When to use testid locators]\nYou can also use test ids when you choose to use the test id methodology or when you can't locate by role or text.\n:::",
+        "Create a file that follows the `test_` prefix convention, such as `test_example.py`, inside the current working directory or in a sub-directory with the code below. Make sure your test name also follows the `test_` prefix convention.\n\n```py\nimport re\nfrom playwright.sync_api import Page, expect\n\ndef test_has_title(page: Page):\n    page.goto(\"https://playwright.dev/\")\n\n    # Expect a title \"to contain\" a substring.\n    expect(page).to_have_title(re.compile(\"Playwright\"))\n\ndef test_get_started_link(page: Page):\n    page.goto(\"https://playwright.dev/\")\n\n    # Click the get started link.\n    page.get_by_role(\"link\", name=\"Get started\").click()\n\n    # Expects page to have a heading with the name of Installation.\n    expect(page.get_by_role(\"heading\", name=\"Installation\")).to_be_visible()\n```"
+      ],
+      "retrieved_sources": [
+        "locators",
+        "locators",
+        "locators",
+        "intro-python"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.8696,
+        "context_precision": 0.8333,
+        "context_recall": 1.0,
+        "hallucination": 0.75
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "locators#12",
+          "source": "locators",
+          "score": 0.7771
+        },
+        {
+          "id": "locators#31",
+          "source": "locators",
+          "score": 0.7173
+        },
+        {
+          "id": "locators#11",
+          "source": "locators",
+          "score": 0.71
+        },
+        {
+          "id": "intro-python#2",
+          "source": "intro-python",
+          "score": 0.6149
+        }
+      ],
+      "timings_s": {
+        "retrieval": 2.085,
+        "generation": 67.557,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 46.75,
+        "answer_relevancy": 8.2,
+        "context_precision": 68.87,
+        "context_recall": 25.14,
+        "hallucination": 26.59
+      }
+    },
+    {
+      "id": "popup-window",
+      "question": "How do I get hold of a popup window that opens when I click a link?",
+      "reference": "Wrap the click in page.expect_popup() as a context manager and read popup_info.value to get the new Page.",
+      "sources": [
+        "pages"
+      ],
+      "answer": "To get hold of a popup window that opens when you click a link, you can use the `page.expect_popup()` method. This method allows you to wait for the popup to open and then retrieve a reference to it.\n\n```python\nwith page.expect_popup() as popup_info:\n    page.get_by_text(\"open the popup\").click()\npopup = popup_info.value\n```",
+      "contexts": [
+        "If the page opens a pop-up (e.g. pages opened by `target=\"_blank\"` links), you can get a reference to it by listening to the `popup` event on the page.\n\nThis event is emitted in addition to the `browserContext.on('page')` event, but only for popups relevant to this page.\n\n```python\n# Get popup after a specific action (e.g., click)\nwith page.expect_popup() as popup_info:\n    page.get_by_text(\"open the popup\").click()\npopup = popup_info.value\n\n# Interact with the popup normally\npopup.get_by_role(\"button\").click()\nprint(popup.title())\n```\n\nIf the action that triggers the popup is unknown, the following pattern can be used.\n\n```python\n# Get all popups when they open\ndef handle_popup(popup):\n    popup.wait_for_load_state()\n    print(popup.title())\n\npage.on(\"popup\", handle_popup)\n```",
+        "Set up route on the entire browser context with `browser_context.route` or page with `page.route`. It will apply to popup windows and opened links.\n\n```python\ncontext.route(\n    \"**/api/login\",\n    lambda route: route.fulfill(status=200, body=\"accept\"))\npage.goto(\"https://example.com\")\n```",
+        "In order to assert that a print dialog via [`window.print`](https://developer.mozilla.org/en-US/docs/Web/API/Window/print) was triggered, you can use the following snippet:\n\n```python\npage.goto(\"<url>\")\n\npage.evaluate(\"(() => {window.waitForPrintDialog = new Promise(f => window.print = f);})()\")\npage.get_by_text(\"Print it!\").click()\n\npage.wait_for_function(\"window.waitForPrintDialog\")\n```\n\nThis will wait for the print dialog to be opened after the button is clicked.\nMake sure to evaluate the script before clicking the button / after the page is loaded.",
+        "Playwright can interact with the web page dialogs such as [`alert`](https://developer.mozilla.org/en-US/docs/Web/API/Window/alert), [`confirm`](https://developer.mozilla.org/en-US/docs/Web/API/Window/confirm), [`prompt`](https://developer.mozilla.org/en-US/docs/Web/API/Window/prompt) as well as [`beforeunload`](https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event) confirmation. For print dialogs, see Print."
+      ],
+      "retrieved_sources": [
+        "pages",
+        "network",
+        "dialogs",
+        "dialogs"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.8385,
+        "context_precision": 0.9167,
+        "context_recall": 1.0,
+        "hallucination": 0.25
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "pages#3",
+          "source": "pages",
+          "score": 0.737
+        },
+        {
+          "id": "network#7",
+          "source": "network",
+          "score": 0.6653
+        },
+        {
+          "id": "dialogs#3",
+          "source": "dialogs",
+          "score": 0.6628
+        },
+        {
+          "id": "dialogs#0",
+          "source": "dialogs",
+          "score": 0.6562
+        }
+      ],
+      "timings_s": {
+        "retrieval": 1.333,
+        "generation": 10.81,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 51.38,
+        "answer_relevancy": 6.8,
+        "context_precision": 24.49,
+        "context_recall": 12.09,
+        "hallucination": 21.4
+      }
+    },
+    {
+      "id": "new-tab-in-context",
+      "question": "How can I handle a new page (tab) opened by a link with target=\"_blank\"?",
+      "reference": "Wrap the click in context.expect_page() and use new_page_info.value; you can also listen with context.on(\"page\", handler) for every new page.",
+      "sources": [
+        "pages"
+      ],
+      "answer": "To handle a new page (tab) opened by a link with `target=\"_blank\"`, you can use the `page` event on the browser context. Here's how:\n\n```python\n# Get new page after a specific action (e.g., clicking a link)\nwith context.expect_page() as new_page_info:\n    page.get_by_text(\"open new tab\").click()  # Opens a new tab\nnew_page = new_page_info.value\n\n# Interact with the new page normally\nnew_page.get_by_role(\"button\").click()\nprint(new_page.title())\n```",
+      "contexts": [
+        "The `page` event on browser contexts can be used to get new pages that are created in the context. This can be used to\nhandle new pages opened by `target=\"_blank\"` links.\n\n```python\n# Get page after a specific action (e.g. clicking a link)\nwith context.expect_page() as new_page_info:\n    page.get_by_text(\"open new tab\").click() # Opens a new tab\nnew_page = new_page_info.value\n\n# Interact with the new page normally\nnew_page.get_by_role(\"button\").click()\nprint(new_page.title())\n```\n\nIf the action that triggers the new page is unknown, the following pattern can be used.\n\n```python\n# Get all new pages (including popups) in the context\ndef handle_page(page):\n    page.wait_for_load_state()\n    print(page.title())\n\ncontext.on(\"page\", handle_page)\n```",
+        "Simplest form of a navigation is opening a URL:\n\n```python\n# Navigate the page\npage.goto(\"https://example.com\")\n```\n\nThe code above loads the page and waits for the web page to fire the\n[load](https://developer.mozilla.org/en-US/docs/Web/API/Window/load_event) event.\nThe load event is fired when the whole page has loaded, including all dependent\nresources such as stylesheets, scripts, iframes, and images.\n\n:::note\nIf the page does a client-side redirect before `load`, `page.goto` will\nwait for the redirected page to fire the `load` event.\n:::\n\n:::note\nIn Firefox, a navigation triggered by the page can interrupt `page.goto`\nwith an `NS_BINDING_ABORTED` error. This is a\n[known Firefox limitation](https://github.com/microsoft/playwright/issues/20749).\n:::",
+        "If the page opens a pop-up (e.g. pages opened by `target=\"_blank\"` links), you can get a reference to it by listening to the `popup` event on the page.\n\nThis event is emitted in addition to the `browserContext.on('page')` event, but only for popups relevant to this page.\n\n```python\n# Get popup after a specific action (e.g., click)\nwith page.expect_popup() as popup_info:\n    page.get_by_text(\"open the popup\").click()\npopup = popup_info.value\n\n# Interact with the popup normally\npopup.get_by_role(\"button\").click()\nprint(popup.title())\n```\n\nIf the action that triggers the popup is unknown, the following pattern can be used.\n\n```python\n# Get all popups when they open\ndef handle_popup(popup):\n    popup.wait_for_load_state()\n    print(popup.title())\n\npage.on(\"popup\", handle_popup)\n```",
+        "Playwright splits the process of showing a new document in a page into **navigation** and **loading**.\n\n**Navigation starts** by changing the page URL or by interacting with the page (e.g., clicking a link).\nThe navigation intent may be canceled, for example, on hitting an unresolved DNS address or transformed into a file download.\n\n**Navigation is committed** when the response headers have been parsed and session history is updated. Only after the\nnavigation succeeds (is committed), the page starts **loading** the document.\n\n**Loading** covers getting the remaining response body over the network, parsing, executing the scripts and firing load\nevents:\n- `page.url` is set to the new url\n- document content is loaded over network and parsed\n- `d_o_m_content_loaded` event is fired\n- page executes some scripts and loads resources like stylesheets and images\n- `load` event is fired\n- page executes dynamically loaded scripts"
+      ],
+      "retrieved_sources": [
+        "pages",
+        "navigations",
+        "pages",
+        "navigations"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.892,
+        "context_precision": 0.8056,
+        "context_recall": 1.0,
+        "hallucination": 0.25
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "pages#2",
+          "source": "pages",
+          "score": 0.7274
+        },
+        {
+          "id": "navigations#1",
+          "source": "navigations",
+          "score": 0.6734
+        },
+        {
+          "id": "pages#3",
+          "source": "pages",
+          "score": 0.6678
+        },
+        {
+          "id": "navigations#6",
+          "source": "navigations",
+          "score": 0.6667
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.036,
+        "generation": 15.995,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 65.94,
+        "answer_relevancy": 4.75,
+        "context_precision": 31.75,
+        "context_recall": 19.18,
+        "hallucination": 26.21
+      }
+    },
+    {
+      "id": "dialogs-default",
+      "question": "What does Playwright do with alert, confirm and prompt dialogs by default, and how do I accept one?",
+      "reference": "Dialogs are auto-dismissed by default. Register a handler before the action that triggers the dialog, for example page.on(\"dialog\", lambda dialog: dialog.accept()).",
+      "sources": [
+        "dialogs"
+      ],
+      "answer": "By default, Playwright auto-dismisses alert, confirm, and prompt dialogs. To accept a dialog, you can register a handler for the `dialog` event and use `dialog.accept()`. Here's how to accept a dialog:\n\n```python\npage.on(\"dialog\", lambda dialog: dialog.accept())\n```",
+      "contexts": [
+        "Playwright can interact with the web page dialogs such as [`alert`](https://developer.mozilla.org/en-US/docs/Web/API/Window/alert), [`confirm`](https://developer.mozilla.org/en-US/docs/Web/API/Window/confirm), [`prompt`](https://developer.mozilla.org/en-US/docs/Web/API/Window/prompt) as well as [`beforeunload`](https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event) confirmation. For print dialogs, see Print.",
+        "By default, dialogs are auto-dismissed by Playwright, so you don't have to handle them. However, you can register a dialog handler before the action that triggers the dialog to either `dialog.accept` or `dialog.dismiss` it.\n\n```python\npage.on(\"dialog\", lambda dialog: dialog.accept())\npage.get_by_role(\"button\").click()\n```\n\n:::note\n`dialog` listener **must handle** the dialog. Otherwise your action will stall, be it `locator.click` or something else. That's because dialogs in Web are modals and therefore block further page execution until they are handled.\n:::\n\nAs a result, the following snippet will never resolve:\n\n:::warning\nWRONG!\n:::\n\n```python\npage.on(\"dialog\", lambda dialog: print(dialog.message))\npage.get_by_role(\"button\").click() # Will hang here\n```\n\n:::note\nIf there is no listener for `dialog`, all dialogs are automatically dismissed.\n:::",
+        "Playwright performs a range of actionability checks on the elements before making actions to ensure these actions\nbehave as expected. It auto-waits for all the relevant checks to pass and only then performs the requested action. If the required checks do not pass within the given `timeout`, action fails with the `TimeoutError`.\n\nFor example, for `locator.click`, Playwright will ensure that:\n- locator resolves to exactly one element\n- element is [Visible]\n- element is [Stable], as in not animating or completed animation\n- element [Receives Events], as in not obscured by other elements\n- element is [Enabled]\n- element is [Not Inert]\n\nHere is the complete list of actionability checks performed for each action:",
+        "Playwright can interact with HTML Input elements such as text inputs, checkboxes, radio buttons, select options, mouse clicks, type characters, keys and shortcuts as well as upload files and focus elements."
+      ],
+      "retrieved_sources": [
+        "dialogs",
+        "dialogs",
+        "actionability",
+        "input"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.8344,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "hallucination": 0.75
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "dialogs#0",
+          "source": "dialogs",
+          "score": 0.8411
+        },
+        {
+          "id": "dialogs#1",
+          "source": "dialogs",
+          "score": 0.7807
+        },
+        {
+          "id": "actionability#0",
+          "source": "actionability",
+          "score": 0.7475
+        },
+        {
+          "id": "input#0",
+          "source": "input",
+          "score": 0.7432
+        }
+      ],
+      "timings_s": {
+        "retrieval": 1.343,
+        "generation": 9.965,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 64.77,
+        "answer_relevancy": 7.12,
+        "context_precision": 33.91,
+        "context_recall": 25.37,
+        "hallucination": 24.99
+      }
+    },
+    {
+      "id": "download-save",
+      "question": "How do I wait for a file download and save it to a specific path?",
+      "reference": "Wrap the action in page.expect_download(), take download_info.value and call download.save_as(path), for example with download.suggested_filename as the file name.",
+      "sources": [
+        "downloads"
+      ],
+      "answer": "To wait for a file download and save it to a specific path, you can use the `page.expect_download()` method and then call the `save_as` method on the downloaded file object. Here is an example:\n\n```python\nwith page.expect_download() as download_info:\n    page.get_by_text(\"Download file\").click()\ndownload = download_info.value\ndownload.save_as(\"/path/to/save/at/\" + download.suggested_filename)\n```",
+      "contexts": [
+        "For every attachment downloaded by the page, `download` event is emitted. All these attachments are downloaded into a temporary folder. You can obtain the download url, file name and payload stream using the [Download] object from the event.\n\nYou can specify where to persist downloaded files using the `launch.downloads_path` option in `browser_type.launch`.\n\n:::note\nDownloaded files are deleted when the browser context that produced them is closed.\n:::\n\nHere is the simplest way to handle the file download:\n\n```python\n# Start waiting for the download\nwith page.expect_download() as download_info:\n    # Perform the action that initiates download\n    page.get_by_text(\"Download file\").click()\ndownload = download_info.value\n\n# Wait for the download process to complete and save the downloaded file somewhere\ndownload.save_as(\"/path/to/save/at/\" + download.suggested_filename)\n```",
+        "If you have no idea what initiates the download, you can still handle the event:\n\n```python\npage.on(\"download\", lambda download: print(download.path()))\n```\n\nNote that handling the event forks the control flow and makes the script harder to follow. Your scenario might end while you are downloading a file since your main control flow is not awaiting for this operation to resolve.\n\n:::note\nFor uploading files, see the uploading files section.\n:::",
+        "You can select input files for upload using the `locator.set_input_files` method. It expects first argument to point to an [input element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input) with the type `\"file\"`. Multiple files can be passed in the array. If some of the file paths are relative, they are resolved relative to the current working directory. Empty array clears the selected files.\n\n```python\n# Select one file\npage.get_by_label(\"Upload file\").set_input_files('myfile.pdf')\n\n# Select multiple files\npage.get_by_label(\"Upload files\").set_input_files(['file1.txt', 'file2.txt'])\n\n# Select a directory\npage.get_by_label(\"Upload directory\").set_input_files('mydir')\n\n# Remove all the selected files\npage.get_by_label(\"Upload file\").set_input_files([])\n\n# Upload buffer from memory\npage.get_by_label(\"Upload file\").set_input_files(\n    files=[\n        {\"name\": \"test.txt\", \"mimeType\": \"text/plain\", \"buffer\": b\"this is a test\"}\n    ],\n)\n```\n\nIf you don't have input element in hand (it is created dynamically), you can handle the `file_chooser` event\nor use a corresponding waiting method upon your action:",
+        "You can open the saved trace using the Playwright CLI or in your browser on [`trace.playwright.dev`](https://trace.playwright.dev). Make sure to add the full path to where your trace's zip file is located. Once opened you can click on each action or use the timeline to see the state of the page before and after each action. You can also inspect the log, source and network during each step of the test. The trace viewer creates a DOM snapshot so you can fully interact with it, open devtools etc.\n\n```bash\nmvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args=\"show-trace trace.zip\"\n```\n\n```bash\nplaywright show-trace trace.zip\n```\n\n######\n\n<img src=\"https://github.com/microsoft/playwright/assets/13063165/10fe3585-8401-4051-b1c2-b2e92ac4c274\" alt=\"playwright trace viewer\" width=\"3598\" height=\"2218\" />\n\nTo learn more check out our detailed guide on Trace Viewer."
+      ],
+      "retrieved_sources": [
+        "downloads",
+        "downloads",
+        "input",
+        "trace-viewer-intro-java-python"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.8577,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "hallucination": 0.5
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "downloads#0",
+          "source": "downloads",
+          "score": 0.7855
+        },
+        {
+          "id": "downloads#1",
+          "source": "downloads",
+          "score": 0.7108
+        },
+        {
+          "id": "input#10",
+          "source": "input",
+          "score": 0.6523
+        },
+        {
+          "id": "trace-viewer-intro-java-python#2",
+          "source": "trace-viewer-intro-java-python",
+          "score": 0.6451
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.037,
+        "generation": 14.414,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 51.93,
+        "answer_relevancy": 3.87,
+        "context_precision": 27.69,
+        "context_recall": 59.9,
+        "hallucination": 24.22
+      }
+    },
+    {
+      "id": "download-lifetime",
+      "question": "What happens to downloaded files when the browser context is closed?",
+      "reference": "Downloaded files are deleted when the browser context that produced them is closed, so save them with save_as before that.",
+      "sources": [
+        "downloads"
+      ],
+      "answer": "Downloaded files are deleted when the browser context that produced them is closed. This is noted in the documentation as a cleanup process. The files are stored temporarily in a specified downloads path, but they are removed once the context is closed. To persist files, you must save them explicitly before the context is closed.",
+      "contexts": [
+        "For every attachment downloaded by the page, `download` event is emitted. All these attachments are downloaded into a temporary folder. You can obtain the download url, file name and payload stream using the [Download] object from the event.\n\nYou can specify where to persist downloaded files using the `launch.downloads_path` option in `browser_type.launch`.\n\n:::note\nDownloaded files are deleted when the browser context that produced them is closed.\n:::\n\nHere is the simplest way to handle the file download:\n\n```python\n# Start waiting for the download\nwith page.expect_download() as download_info:\n    # Perform the action that initiates download\n    page.get_by_text(\"Download file\").click()\ndownload = download_info.value\n\n# Wait for the download process to complete and save the downloaded file somewhere\ndownload.save_as(\"/path/to/save/at/\" + download.suggested_filename)\n```",
+        "Emulate the network being offline.\n\n```python\ncontext = browser.new_context(\n  offline=True\n)\n```\n\n:::note\nOffline emulation affects HTTP requests, such as page navigations, `fetch()` and `XMLHttpRequest`.\n\nWebSocket behavior depends on the browser and whether the connection is already established. Chromium and Firefox fail new WebSocket connections while offline, but do not close already-open connections. Chromium can defer incoming messages until the context goes back online, rather than lose them; Firefox can continue delivering messages while offline. WebKit can allow both new WebSocket connections and traffic on established connections while offline. Do not rely on offline emulation to test WebSocket message loss or connection closure.\n\nOffline emulation does not affect WebRTC traffic: established `RTCPeerConnection`s keep sending and receiving media over UDP. To test WebRTC connection loss, interrupt the connection outside the browser, for example by stopping the TURN server or using an OS-level firewall.\n:::",
+        "Modern browsers utilize a Back/Forward Cache (BFCache) to instantly load a page when a user navigates back or forward. This is achieved by freezing the page's DOM and JavaScript heap in memory, and thawing it upon return.\n\nBy default, Playwright disables the BFCache across all browsers to ensure consistent, clean testing environments.\n\nEven if you explicitly enable BFCache, **testing BFCache restorations is not supported**. Because a BFCache restore skips the network fetch phase, the browser does not fire standard navigation lifecycle events (such as `commit`, `domcontentloaded`, or `load`). Playwright's internal `Page` state heavily relies on these network-level events to stay synchronized.\n\nConsequently, triggering a BFCache restore (e.g., via `page.goBack()`) will bypass Playwright's lifecycle tracking, resulting in timeouts and a completely desynchronized `Page` object where subsequent interactions will fail.",
+        "If you have no idea what initiates the download, you can still handle the event:\n\n```python\npage.on(\"download\", lambda download: print(download.path()))\n```\n\nNote that handling the event forks the control flow and makes the script harder to follow. Your scenario might end while you are downloading a file since your main control flow is not awaiting for this operation to resolve.\n\n:::note\nFor uploading files, see the uploading files section.\n:::"
+      ],
+      "retrieved_sources": [
+        "downloads",
+        "emulation",
+        "navigations",
+        "downloads"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.9816,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "hallucination": 0.5
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "downloads#0",
+          "source": "downloads",
+          "score": 0.7401
+        },
+        {
+          "id": "emulation#11",
+          "source": "emulation",
+          "score": 0.6669
+        },
+        {
+          "id": "navigations#5",
+          "source": "navigations",
+          "score": 0.6664
+        },
+        {
+          "id": "downloads#1",
+          "source": "downloads",
+          "score": 0.6533
+        }
+      ],
+      "timings_s": {
+        "retrieval": 1.331,
+        "generation": 11.324,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 49.0,
+        "answer_relevancy": 6.23,
+        "context_precision": 31.75,
+        "context_recall": 13.68,
+        "hallucination": 20.24
+      }
+    },
+    {
+      "id": "full-page-screenshot",
+      "question": "How do I take a screenshot of the whole scrollable page, not just the viewport?",
+      "reference": "Call page.screenshot(path=\"screenshot.png\", full_page=True).",
+      "sources": [
+        "screenshots"
+      ],
+      "answer": "To take a screenshot of the entire scrollable page, use the `screenshot` method with the `full_page=True` option.\n\n```python\npage.screenshot(path=\"screenshot.png\", full_page=True)\n```",
+      "contexts": [
+        "Full page screenshot is a screenshot of a full scrollable page, as if you had a very\ntall screen and the page could fit it entirely.\n\n```python\npage.screenshot(path=\"screenshot.png\", full_page=True)\n```",
+        "Most of the time, Playwright will automatically scroll for you before doing any actions. Therefore, you do not need to scroll explicitly.\n\n```python\n# Scrolls automatically so that button is visible\npage.get_by_role(\"button\").click()\n```\n\nHowever, in rare cases you might need to manually scroll. For example, you might want to force an \"infinite list\" to load more elements, or position the page for a specific screenshot. In such a case, the most reliable way is to find an element that you want to make visible at the bottom, and scroll it into view.\n\n```python\n# Scroll the footer into view, forcing an \"infinite list\" to load more content\npage.get_by_text(\"Footer text\").scroll_into_view_if_needed()\n```\n\nIf you would like to control the scrolling more precisely, use `mouse.wheel` or `locator.evaluate`:\n\n```python\n# Position the mouse and scroll with the mouse wheel\npage.get_by_test_id(\"scrolling-container\").hover()\npage.mouse.wheel(0, 10)\n\n# Alternatively, programmatically scroll a specific element\npage.get_by_test_id(\"scrolling-container\").evaluate(\"e => e.scrollTop += 100\")\n```",
+        "The viewport is included in the device but you can override it for some tests with `page.set_viewport_size`.\n\nTest file:\n\nThe same works inside a test file.\n\n```python\n# Create context with given viewport\ncontext = browser.new_context(\n  viewport={ 'width': 1280, 'height': 1024 }\n)\n\n# Resize viewport for individual page\npage.set_viewport_size({\"width\": 1600, \"height\": 1200})\n\n# Emulate high-DPI\ncontext = browser.new_context(\n  viewport={ 'width': 2560, 'height': 1440 },\n  device_scale_factor=2,\n)\n```",
+        "Sometimes it is useful to take a screenshot of a single element.\n\n```python\npage.locator(\".header\").screenshot(path=\"screenshot.png\")\n```"
+      ],
+      "retrieved_sources": [
+        "screenshots",
+        "input",
+        "emulation",
+        "screenshots"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.8821,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "hallucination": 0.5
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "screenshots#1",
+          "source": "screenshots",
+          "score": 0.7685
+        },
+        {
+          "id": "input#15",
+          "source": "input",
+          "score": 0.6833
+        },
+        {
+          "id": "emulation#3",
+          "source": "emulation",
+          "score": 0.6787
+        },
+        {
+          "id": "screenshots#3",
+          "source": "screenshots",
+          "score": 0.6768
+        }
+      ],
+      "timings_s": {
+        "retrieval": 1.328,
+        "generation": 8.674,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 52.32,
+        "answer_relevancy": 7.42,
+        "context_precision": 32.53,
+        "context_recall": 21.57,
+        "hallucination": 23.06
+      }
+    },
+    {
+      "id": "screenshot-buffer",
+      "question": "Can I capture a screenshot into memory instead of a file?",
+      "reference": "Yes. page.screenshot() without a path returns the image bytes, which you can process or encode, for example in base64.",
+      "sources": [
+        "screenshots"
+      ],
+      "answer": "Yes, you can capture a screenshot into memory by using the `screenshot()` method without specifying a `path`, which returns the image as bytes. You can then process or transmit these bytes as needed. For example:\n\n```python\nscreenshot_bytes = page.screenshot()\n```",
+      "contexts": [
+        "Rather than writing into a file, you can get a buffer with the image and post-process it or pass it to a third party pixel diff facility.\n\n```python\nscreenshot_bytes = page.screenshot()\nprint(base64.b64encode(screenshot_bytes).decode())\n```",
+        "Here is a quick way to capture a screenshot and save it into a file:\n\n```python\npage.screenshot(path=\"screenshot.png\")\n```\n\nScreenshots API accepts many parameters for image format, clip area, quality, etc. Make sure to check them out.",
+        "Full page screenshot is a screenshot of a full scrollable page, as if you had a very\ntall screen and the page could fit it entirely.\n\n```python\npage.screenshot(path=\"screenshot.png\", full_page=True)\n```",
+        "Sometimes it is useful to take a screenshot of a single element.\n\n```python\npage.locator(\".header\").screenshot(path=\"screenshot.png\")\n```"
+      ],
+      "retrieved_sources": [
+        "screenshots",
+        "screenshots",
+        "screenshots",
+        "screenshots"
+      ],
+      "metrics": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.9224,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "hallucination": 1.0
+      },
+      "errors": {},
+      "retrieved": [
+        {
+          "id": "screenshots#2",
+          "source": "screenshots",
+          "score": 0.7595
+        },
+        {
+          "id": "screenshots#0",
+          "source": "screenshots",
+          "score": 0.7386
+        },
+        {
+          "id": "screenshots#1",
+          "source": "screenshots",
+          "score": 0.6693
+        },
+        {
+          "id": "screenshots#3",
+          "source": "screenshots",
+          "score": 0.6641
+        }
+      ],
+      "timings_s": {
+        "retrieval": 0.037,
+        "generation": 39.103,
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 48.39,
+        "answer_relevancy": 7.48,
+        "context_precision": 29.59,
+        "context_recall": 19.11,
+        "hallucination": 20.88
+      }
+    }
+  ],
+  "summary": {
+    "hit_rate": {
+      "mean": 1.0,
+      "n": 8,
+      "failed": 0,
+      "lower_is_better": false
+    },
+    "mrr": {
+      "mean": 1.0,
+      "n": 8,
+      "failed": 0,
+      "lower_is_better": false
+    },
+    "faithfulness": {
+      "mean": 1.0,
+      "n": 8,
+      "failed": 0,
+      "lower_is_better": false
+    },
+    "answer_relevancy": {
+      "mean": 0.8848,
+      "n": 8,
+      "failed": 0,
+      "lower_is_better": false
+    },
+    "context_precision": {
+      "mean": 0.9445,
+      "n": 8,
+      "failed": 0,
+      "lower_is_better": false
+    },
+    "context_recall": {
+      "mean": 1.0,
+      "n": 8,
+      "failed": 0,
+      "lower_is_better": false
+    },
+    "hallucination": {
+      "mean": 0.5625,
+      "n": 8,
+      "failed": 0,
+      "lower_is_better": false
+    }
+  }
+}

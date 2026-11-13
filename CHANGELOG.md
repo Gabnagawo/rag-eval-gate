@@ -27,8 +27,17 @@ All notable changes to this project are documented here. The format follows
 - GitHub Actions: CI (ruff, mypy, pytest with coverage gate, offline retrieval smoke test,
   hadolint) and the PR gate workflow (Ollama install, `ci` profile, sticky comment, fail on
   breach).
-- Local branch `demo/degraded-retriever` with the retrieval change used for the demo PR, and
-  real baseline vs degraded results in `docs/results/`.
+- Local branch `demo/degraded-retriever` with the retrieval change used for the demo PR
+  (`docs/DEMO-PR.md`), and real baseline vs degraded results in `docs/results/`.
+- Thresholds calibrated on those two runs (`docs/THRESHOLDS.md`): faithfulness and
+  context recall gate the change; the other five metrics keep regression floors.
+- `ci` profile (first 8 questions) for `make demo` and the PR workflow.
+- Ollama client recovery for judge calls that come back empty or aborted: new seed,
+  runner reload (`OLLAMA_RELOAD_ON_FAULT`), JSON mode, then an unconstrained request;
+  `unload_every` per profile for low-RAM machines (`docs/JUDGE-EMPTY-COMPLETIONS.md`).
 - Dockerfile and Makefile.
+
+### Fixed
+- `rag-gate gate` no longer crashes on a Windows console that cannot encode the comment.
 
 [0.1.0]: https://github.com/Gabnagawo/rag-eval-gate/releases/tag/v0.1.0
