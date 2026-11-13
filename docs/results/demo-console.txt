@@ -1,0 +1,38 @@
+$ uv run rag-gate eval --profile ci --unload-every 3 --out results/demo.json
+rag-eval-gate 0.1.0: 8 questions, profile ci, generator ollama/qwen3:8b, judge qwen3:8b, top_k 4, chunk_size 1200, 235 chunks
+[ 1/8] custom-test-id-attribute   hit_rate=1.00  mrr=1.00  faithfulness=1.00  answer_relevancy=0.87  context_precision=0.83  context_recall=1.00  hallucination=0.75  (245 s)
+[ 2/8] popup-window               hit_rate=1.00  mrr=1.00  faithfulness=1.00  answer_relevancy=0.84  context_precision=0.92  context_recall=1.00  hallucination=0.25  (128 s)
+[ 3/8] new-tab-in-context         hit_rate=1.00  mrr=1.00  faithfulness=1.00  answer_relevancy=0.89  context_precision=0.81  context_recall=1.00  hallucination=0.25  (164 s)
+[ 4/8] dialogs-default            hit_rate=1.00  mrr=1.00  faithfulness=1.00  answer_relevancy=0.83  context_precision=1.00  context_recall=1.00  hallucination=0.75  (167 s)
+[ 5/8] download-save              hit_rate=1.00  mrr=1.00  faithfulness=1.00  answer_relevancy=0.86  context_precision=1.00  context_recall=1.00  hallucination=0.50  (182 s)
+[ 6/8] download-lifetime          hit_rate=1.00  mrr=1.00  faithfulness=1.00  answer_relevancy=0.98  context_precision=1.00  context_recall=1.00  hallucination=0.50  (134 s)
+[ 7/8] full-page-screenshot       hit_rate=1.00  mrr=1.00  faithfulness=1.00  answer_relevancy=0.88  context_precision=1.00  context_recall=1.00  hallucination=0.50  (147 s)
+[ 8/8] screenshot-buffer          hit_rate=1.00  mrr=1.00  faithfulness=1.00  answer_relevancy=0.92  context_precision=1.00  context_recall=1.00  hallucination=1.00  (165 s)
+hit_rate           1.000  (n=8)
+mrr                1.000  (n=8)
+faithfulness       1.000  (n=8)
+answer_relevancy   0.885  (n=8)
+context_precision  0.945  (n=8)
+context_recall     1.000  (n=8)
+hallucination      0.562  (n=8)
+judge/LLM requests: 108 (2 empty completions, 2 aborted, 8 runner reloads, 0 answered by a JSON fallback); results: results/demo.json
+(exit 0)
+
+$ uv run rag-gate gate results/demo.json --baseline docs/results/baseline.json --comment results/demo-gate.md
+<!-- rag-eval-gate -->
+### ✅ RAG eval gate passed
+
+Profile `ci`, 8 golden questions, generator `ollama/qwen3:8b`, judge `qwen3:8b`, embeddings `nomic-embed-text`, top_k 4, chunk_size 1200.
+
+| Metric | Baseline | This PR | Δ | Threshold | Status |
+|---|---|---|---|---|---|
+| faithfulness | 1.000 | 1.000 | +0.000 | >= 0.85 | pass |
+| context_recall | 1.000 | 1.000 | +0.000 | >= 0.85 | pass |
+| hit_rate | 1.000 | 1.000 | +0.000 | >= 0.80 | pass |
+| mrr | 1.000 | 1.000 | +0.000 | >= 0.75 | pass |
+| answer_relevancy | 0.872 | 0.885 | +0.013 | >= 0.70 | pass |
+| context_precision | 0.955 | 0.945 | -0.010 | >= 0.70 | pass |
+| hallucination | 0.562 | 0.562 | +0.000 | >= 0.40 | pass |
+
+Thresholds live in `eval.yaml`; the pipeline under test is `rag.yaml`. All metrics are higher-is-better (DeepEval 4.x scores hallucination as agreement).
+(exit 0)
