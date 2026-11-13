@@ -117,12 +117,19 @@ class Evaluator:
         out_path: Path,
         run: RunInfo,
         progress: Progress | None = None,
+        unload_every: int | None = None,
+        unload: Callable[[], None] | None = None,
     ) -> None:
         self.pipeline = pipeline
         self.metric_fns = metric_fns
         self.out_path = out_path
         self.run_info = run
         self.progress = progress
+        # Low-RAM machines: the llama-server behind Ollama keeps a host-RAM cache of
+        # prompt states that grows with every distinct judge prompt. Unloading the
+        # model every few questions drops it.
+        self.unload_every = unload_every
+        self.unload = unload
 
     def run(self, items: list[GoldenItem], resume: bool = False) -> Results:
         results = Results(run=self.run_info)
@@ -137,9 +144,13 @@ class Evaluator:
                 ]
                 results.run.started_at = previous.run.started_at
         done = results.sample_ids()
+        scored = 0
         for n, item in enumerate(items, start=1):
             if item.id in done:
                 continue
+            if self.unload and self.unload_every and scored and scored % self.unload_every == 0:
+                self.unload()
+            scored += 1
             record = self.score_item(item)
             results.samples.append(record)
             results.samples.sort(key=lambda s: [i.id for i in items].index(s["id"]))

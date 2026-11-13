@@ -39,7 +39,13 @@ EvalOpt = Annotated[Path, typer.Option("--eval-config", help="Golden set, thresh
 
 
 def echo(text: str = "") -> None:
-    sys.stdout.write(text + "\n")
+    try:
+        sys.stdout.write(text + "\n")
+    except UnicodeEncodeError:
+        # A Windows console in a legacy code page (cp1252) cannot print the marks of
+        # the gate comment; degrade the characters instead of crashing the command.
+        encoding = sys.stdout.encoding or "ascii"
+        sys.stdout.write((text + "\n").encode(encoding, "replace").decode(encoding))
     sys.stdout.flush()
 
 
@@ -118,6 +124,10 @@ def run_eval(
         str | None, typer.Option(help="Comma-separated subset of eval.yaml metrics.")
     ] = None,
     resume: Annotated[bool, typer.Option(help="Keep already scored samples in --out.")] = False,
+    unload_every: Annotated[
+        int | None,
+        typer.Option(min=0, help="Unload the Ollama models every N questions (0 = never)."),
+    ] = None,
     offline: Annotated[
         bool, typer.Option(help="Retrieval metrics only, hash embeddings, fake generator.")
     ] = False,
@@ -174,7 +184,22 @@ def run_eval(
         secs = sum(record["timings_s"].values())
         echo(f"[{i:>2}/{total}] {record['id']:<26} {scores}  ({secs:.0f} s)")
 
-    evaluator = Evaluator(RagPipeline(idx, embedder, generator, cfg), fns, out, run, progress)
+    every = prof.unload_every if unload_every is None else unload_every
+    loaded = sorted({generator.model, judge_model, embedder.model})
+
+    def unload() -> None:
+        for name in loaded:
+            client.unload(name)
+
+    evaluator = Evaluator(
+        RagPipeline(idx, embedder, generator, cfg),
+        fns,
+        out,
+        run,
+        progress,
+        unload_every=None if offline else (every or None),
+        unload=unload,
+    )
     results = evaluator.run(items, resume=resume)
     echo()
     for name, s in results.summary.items():
