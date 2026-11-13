@@ -14,7 +14,7 @@ profiles:
   local:
     generator_model: qwen3:8b
     judge_model: qwen3:8b
-    thresholds:
+    thresholds: &thresholds
       hit_rate: {min: 0.80}
       mrr: {min: 0.60}
       faithfulness: {min: 0.70}
@@ -22,3 +22,10 @@ profiles:
       context_precision: {min: 0.60}
       context_recall: {min: 0.70}
       hallucination: {min: 0.40}
+  # The PR workflow and `make demo`: the first 8 golden questions, so a run fits a
+  # GitHub-hosted CPU runner. The gate compares them with the same 8 baseline questions.
+  ci:
+    generator_model: qwen3:8b
+    judge_model: qwen3:8b
+    limit: 8
+    thresholds: *thresholds

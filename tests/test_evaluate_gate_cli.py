@@ -188,10 +188,17 @@ def test_markdown_with_and_without_baseline() -> None:
 
 
 def test_committed_configs_load() -> None:
+    # rag.yaml is what a retrieval PR edits, so only its validity is asserted here.
     cfg = load_rag_config(ROOT / "rag.yaml")
-    assert (cfg.top_k, cfg.chunk_size) == (4, 1200)
+    assert cfg.top_k >= 1
+    assert cfg.chunk_overlap < cfg.chunk_size
     ecfg = load_eval_config(ROOT / "eval.yaml")
     assert "faithfulness" in ecfg.profile("local").thresholds
+    # `make demo` and the PR workflow run the ci profile: a subset, gated on every metric.
+    ci = ecfg.profile("ci")
+    assert ci.limit == 8
+    assert set(ci.thresholds) == set(ecfg.metrics)
+    assert ecfg.profile("local").limit is None
     with pytest.raises(KeyError, match="unknown profile"):
         ecfg.profile("nope")
     with pytest.raises(ValueError, match="chunk_overlap"):
