@@ -33,6 +33,9 @@ class Settings(BaseSettings):
     # Same value for every client of a shared server, or Ollama reloads the model.
     ollama_num_ctx: int = Field(default=16384, ge=2048, alias="OLLAMA_NUM_CTX")
     ollama_think: bool = Field(default=False, alias="OLLAMA_THINK")
+    # Unload the model after a failed completion so the retry runs on a new runner.
+    # Turn it off when other clients depend on the model staying loaded.
+    ollama_reload_on_fault: bool = Field(default=True, alias="OLLAMA_RELOAD_ON_FAULT")
 
     anthropic_api_key: SecretStr | None = Field(default=None, alias="ANTHROPIC_API_KEY")
     openai_api_key: SecretStr | None = Field(default=None, alias="OPENAI_API_KEY")

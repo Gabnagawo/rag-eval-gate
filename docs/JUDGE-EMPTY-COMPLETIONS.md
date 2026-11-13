@@ -100,3 +100,21 @@ Change in `OllamaClient.chat`:
 Unit tests cover the sequence with a fake server (`tests/test_ollama_llm.py`). Whether
 JSON mode or the repeat penalty avoids the abort on the real server is shown by the
 counters of the resumed degraded run in `docs/results/degraded-console.txt`.
+
+## Follow-up 2: reload the runner
+
+The resumed run showed that the two faults are one condition of the runner, not of a
+schema: about two minutes after the model was loaded, `faithfulness`, `answer_relevancy`,
+`context_precision` and `hallucination` calls all started to fail, schema requests and JSON
+mode with the grammar exception and unconstrained requests with the repeat abort, so no
+fallback step could answer (questions 9 to 12 of that pass lost 10 of 20 judge calls). In
+every observed case a freshly loaded runner answered the same kind of request.
+
+`OllamaClient` therefore has `reload_on_fault` (setting `OLLAMA_RELOAD_ON_FAULT`, default
+on): after the first failed attempt of a chat call it asks Ollama to unload the model
+(`keep_alive: 0`), so the second attempt runs on a new runner. It costs one model load
+(about 30 s here) per fault. `rag-gate eval` prints the number of reloads. On a server
+shared with other clients, turn it off.
+
+The server-side cause is still not identified. Both symptoms fit a runner that starts
+producing the same invalid token, but that was not verified.

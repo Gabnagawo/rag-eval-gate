@@ -178,6 +178,7 @@ def build_client(settings: Settings) -> OllamaClient:
         seed=settings.llm_seed,
         timeout_s=settings.llm_timeout_s,
         retries=settings.llm_retries,
+        reload_on_fault=settings.ollama_reload_on_fault,
     )
 
 

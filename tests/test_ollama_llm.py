@@ -183,6 +183,41 @@ def test_plain_chat_gets_a_new_seed_after_a_repeat_limit_abort() -> None:
     assert client.aborted_completions == 1
 
 
+def test_reload_on_fault_unloads_the_model_once_before_the_second_attempt() -> None:
+    # A runner that has started failing answers again after a reload.
+    state = {"reloaded": False}
+    requests: list[dict[str, Any]] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        body = json.loads(request.content)
+        requests.append({"path": request.url.path, **body})
+        if request.url.path == "/api/generate":
+            state["reloaded"] = True
+            return httpx.Response(200, json={"done": True})
+        return chat_ok('{"ok": 1}') if state["reloaded"] else EMPTY
+
+    http = httpx.Client(transport=httpx.MockTransport(handler))
+    client = OllamaClient(client=http, backoff_s=0, seed=1, reload_on_fault=True)
+    result = client.chat("qwen3:8b", [], schema={"type": "object"})
+    assert (result.text, result.schema_fallback) == ('{"ok": 1}', False)
+    assert [r["path"] for r in requests] == ["/api/chat", "/api/generate", "/api/chat"]
+    assert requests[1] == {"path": "/api/generate", "model": "qwen3:8b", "keep_alive": 0}
+    assert (client.runner_reloads, client.empty_completions, client.calls) == (1, 1, 2)
+
+
+def test_reload_failure_is_ignored_and_plain_aborts_reload_too() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.path == "/api/generate":
+            raise httpx.ConnectError("down")
+        return REPEAT_ABORT
+
+    http = httpx.Client(transport=httpx.MockTransport(handler))
+    client = OllamaClient(client=http, backoff_s=0, reload_on_fault=True)
+    with pytest.raises(OllamaError, match="aborted"):
+        client.chat("m", [])
+    assert (client.runner_reloads, client.aborted_completions) == (0, 2)
+
+
 def test_successful_structured_chat_does_not_use_the_fallback() -> None:
     client, requests = client_with([chat_ok('{"a": 1}')])
     result = client.chat("m", [], schema={"type": "object"})
