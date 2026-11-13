@@ -1,5 +1,5 @@
 # Linux/macOS/CI. On Windows run the `uv run ...` commands shown in the README.
-.PHONY: install lint format typecheck test index ask demo eval eval-degraded gate offline docker clean
+.PHONY: install lint format typecheck test index ask demo eval gate offline docker clean
 
 PROFILE ?= local
 
