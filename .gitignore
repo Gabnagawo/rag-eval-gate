@@ -22,7 +22,7 @@ htmlcov/
 
 # Embedding cache, local results, DeepEval scratch files
 .cache/
-results/
+/results/
 .deepeval/
 *.log
 
