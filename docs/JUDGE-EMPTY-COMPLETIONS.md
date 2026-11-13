@@ -118,3 +118,21 @@ shared with other clients, turn it off.
 
 The server-side cause is still not identified. Both symptoms fit a runner that starts
 producing the same invalid token, but that was not verified.
+
+## Follow-up 3: `unload_every`, and a correction about memory
+
+The run with `reload_on_fault` was stopped by the host memory guard at question 18. My
+first reading was that llama-server's prompt cache grows during a run. Measuring it showed
+otherwise: the qwen3:8b runner (num_ctx 16384, Vulkan, 85 % on the GPU) reaches about
+6.2 GB of working set and 8.0 GB of private memory within 90 seconds of loading and then
+stays there (14 samples over 8 minutes, three runner instances). On this 16 GB machine
+that leaves about 1 GB free whenever the model is loaded. The memory pressure is the
+model's fixed footprint next to the other running programs, not a leak.
+
+`unload_every` (per profile in `eval.yaml`, off by default, `--unload-every` on the CLI)
+unloads the models after every N scored questions. It does not lower the peak; it gives
+every batch a new runner. The last pass of the degraded run used `unload_every: 3` with
+`reload_on_fault`: 12 questions, 133 requests, 2 empty completions, 1 abort, 11 runner
+reloads, no JSON fallback used and no failed judge call
+(`docs/results/degraded-console.txt`, pass 4). One pass is not proof that the setting is
+what kept the judges healthy.

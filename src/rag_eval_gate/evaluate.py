@@ -125,9 +125,9 @@ class Evaluator:
         self.out_path = out_path
         self.run_info = run
         self.progress = progress
-        # Low-RAM machines: the llama-server behind Ollama keeps a host-RAM cache of
-        # prompt states that grows with every distinct judge prompt. Unloading the
-        # model every few questions drops it.
+        # Optional: unload the models every few questions so each batch starts on a
+        # freshly loaded runner. Judge faults were seen only on runners that had been
+        # loaded for a few minutes (docs/JUDGE-EMPTY-COMPLETIONS.md).
         self.unload_every = unload_every
         self.unload = unload
 

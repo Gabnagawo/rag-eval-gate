@@ -14,20 +14,26 @@ profiles:
   local:
     generator_model: qwen3:8b
     judge_model: qwen3:8b
-    # Optional, off when absent: unload the Ollama models after every N questions.
-    # On a 16 GB machine the llama-server prompt cache otherwise grows to several GB
-    # during a 30-question run (see README, Limitations).
+    # Optional, off when absent: unload the Ollama models after every N questions, so
+    # each batch runs on a freshly loaded runner (see README, Limitations).
     unload_every: 3
+    # Calibrated on two real 30-question runs (docs/THRESHOLDS.md):
+    #   baseline  top_k 4, chunk 1200/150   docs/results/baseline.json
+    #   degraded  top_k 1, chunk 300/50     docs/results/degraded.json
     thresholds: &thresholds
-      hit_rate: {min: 0.80}
-      mrr: {min: 0.60}
-      faithfulness: {min: 0.70}
-      answer_relevancy: {min: 0.60}
-      context_precision: {min: 0.60}
-      context_recall: {min: 0.70}
-      hallucination: {min: 0.40}
+      # The two metrics that separate the runs. Each threshold sits between them.
+      faithfulness: {min: 0.85}       # baseline 0.943, degraded 0.576
+      context_recall: {min: 0.85}     # baseline 0.967, degraded 0.750
+      # Regression floors. These did not separate the two runs (both pass), so they
+      # only catch a collapse of the metric.
+      hit_rate: {min: 0.80}           # baseline 0.967, degraded 0.900
+      mrr: {min: 0.75}                # baseline 0.922, degraded 0.900
+      answer_relevancy: {min: 0.70}   # baseline 0.876, degraded 0.864
+      context_precision: {min: 0.70}  # baseline 0.893, degraded 0.867
+      hallucination: {min: 0.40}      # baseline 0.590, degraded 0.933 (higher with one context)
   # The PR workflow and `make demo`: the first 8 golden questions, so a run fits a
   # GitHub-hosted CPU runner. The gate compares them with the same 8 baseline questions.
+  # On these 8 questions only faithfulness separates the runs (1.000 vs 0.744).
   ci:
     generator_model: qwen3:8b
     judge_model: qwen3:8b
