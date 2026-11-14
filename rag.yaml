@@ -1,9 +1,9 @@
 # The RAG pipeline under test. A pull request that changes retrieval changes this file,
 # and the eval gate (eval.yaml) decides whether the change may merge.
 corpus_dir: data/corpus
-chunk_size: 1200
-chunk_overlap: 150
-top_k: 4
+chunk_size: 300
+chunk_overlap: 50
+top_k: 1
 embed_model: nomic-embed-text
 query_prefix: "search_query: "
 document_prefix: "search_document: "
