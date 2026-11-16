@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 license = "MIT"
 license-files = ["LICENSE"]
-authors = [{ name = "Gabriel Nagawo", email = "gabrielnagawo12@gmail.com" }]
+authors = [{ name = "Gabriel Nagawo" }]
 keywords = ["rag", "llm", "evaluation", "ragas", "deepeval", "ollama", "ci", "quality-gate"]
 classifiers = [
     "Development Status :: 3 - Alpha",
